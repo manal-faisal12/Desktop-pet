@@ -168,7 +168,7 @@ class SittingBehaviour extends BehaviourHandler {
 //  MODIFIED FriendshipManager: Handles Death Logic
 // ════════════════════════════════════════════════════════════════════════════
 class FriendshipManager {
-    private static final String SAVE_FILE = ".fox_status.dat"; // Hidden binary file
+    private static final String SAVE_FILE = ".fox_status.dat";
     private double friendship = 50.0;
     private boolean isDead = false;
     private JProgressBar bar;
@@ -176,30 +176,23 @@ class FriendshipManager {
     public FriendshipManager() { load(); }
 
     public void increase(double amount) {
-        if(isDead) return;
-        friendship += amount;
+        if (isDead) return;
+        friendship = Math.min(friendship + amount, 100.0);
         refreshBar();
         save();
     }
 
     public void decrease(double amount) {
-        if(isDead) return;
-        friendship -= amount;
-        if (friendship <= 0) {
-            isDead = true;
-            friendship = 0;
-        }
+        if (isDead) return;
+        friendship = Math.max(friendship - amount, 0.0);
+        if (friendship <= 0) isDead = true;
         refreshBar();
         save();
     }
 
-    public boolean isDead() { return isDead; }
-    public double getTotal() { return friendship; }
-
-    public void setBar(JProgressBar bar) {
-        this.bar = bar;
-        refreshBar();
-    }
+    public boolean isDead()      { return isDead; }
+    public double getTotal()     { return friendship; }
+    public void setBar(JProgressBar bar) { this.bar = bar; refreshBar(); }
 
     public void save() {
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(SAVE_FILE))) {
@@ -209,19 +202,23 @@ class FriendshipManager {
     }
 
     private void load() {
-        File file = new File(SAVE_FILE);
-        if (!file.exists()) return;
-        try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
+        File f = new File(SAVE_FILE);
+        if (!f.exists()) return;
+        try (DataInputStream in = new DataInputStream(new FileInputStream(f))) {
             friendship = in.readDouble();
-            isDead = in.readBoolean();
+            isDead     = in.readBoolean();
         } catch (IOException e) { e.printStackTrace(); }
     }
-
+    public void reset() {
+        friendship = 50.0;
+        isDead = false;
+        refreshBar();
+        save();
+    }
     private void refreshBar() {
-        if (bar != null) bar.setValue((int) friendship % 100);
+        if (bar != null) bar.setValue((int) friendship);
     }
 }
-
 class SpriteAnimator {
     private static final int TILE_SIZE = 32;
     private final int petScale;
@@ -304,6 +301,8 @@ public class FoxDesktopPet extends JFrame {
     private TaskManager taskManager;
     public FoxDesktopPet() {
         currentFox = this;
+        //friendshipManager.reset(); for resetting the friendship
+
         //friendshipManager.decrease(200); for testing death of the fox
         if (friendshipManager.isDead()) {
             handleDeathStartup();
@@ -811,9 +810,11 @@ protected void speak(FoxSpeech speech){
             FoxDesktopPet fox = new FoxDesktopPet();
             fox.setTaskManager(manager);
             fox.setVisible(true);
+
         });
     }
 }
+
 class VisualFlowMenu extends JWindow {
 
     public VisualFlowMenu(Point foxLoc) {
