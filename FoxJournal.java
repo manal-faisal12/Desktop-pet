@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public class FoxJournal extends JFrame {
 
     //You can create api key from this website for free: https://openrouter.ai/keys
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "Enter api key here";
     private static final String MODEL = "nvidia/nemotron-3-super-120b-a12b:free";  //write the exact model of the api
 
     private final HttpClient client = HttpClient.newHttpClient();
