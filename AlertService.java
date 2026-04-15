@@ -17,20 +17,24 @@ public class AlertService {
         this.owner   = owner;
         this.manager = manager;
     }
-
+    public static int latestTaskCount = 0;
     // Called once when the app starts
-    public void checkAndAlert() {
-        ArrayList<Task> alertTasks = manager.getAlertTasks();
+        public void checkAndAlert() {
+            ArrayList<Task> alertTasks = manager.getAlertTasks();
+            latestTaskCount = alertTasks.size();
+            if (alertTasks.size() == 0) return;
 
-        // If no tasks are due soon, do nothing
-        if (alertTasks.size() == 0) return;
+            if (FoxDesktopPet.currentFox != null) {//added by Minahil
+                FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(alertTasks.size()));
+            }
+
 
         // Build the message to show
         String message = "⏰  Tasks due within 1 day:\n\n";
 
         for (int i = 0; i < alertTasks.size(); i++) {
             Task t = alertTasks.get(i);
-            message = message + t.getTitle() + "  (" + t.getSubject() + ")\n"+"    Due: " + t.getSubmissionDate().format(Task.DISPLAY_FORMAT)
+            message = message + t.getTitle() + "  (" + t.getSubject() + ")\n" + "    Due: " + t.getSubmissionDate().format(Task.DISPLAY_FORMAT)
                     + "\n\n";
         }
 

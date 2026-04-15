@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.net.URL;//for creating object of type
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 import java.util.Random;//for random dialogue selection
@@ -300,7 +301,7 @@ public class FoxDesktopPet extends JFrame {
     private JFrame activeMenu;
     private VisualFlowMenu activeFlowMenu = null; // will see whether the flowchart menu is open or not
     public static FoxDesktopPet currentFox;
-
+    private TaskManager taskManager;
     public FoxDesktopPet() {
         currentFox = this;
         //friendshipManager.decrease(200); for testing death of the fox
@@ -457,6 +458,7 @@ public class FoxDesktopPet extends JFrame {
     }
 
     private void initTimers() {
+        TaskManager taskManager = null;
         batteryLevel = getSystemBattery();
         new Timer(60000, e -> batteryLevel = getSystemBattery()).start();//after a short delay fetch devices's battery again
         new Timer(30, e -> updateMovement()).start();
@@ -467,7 +469,31 @@ public class FoxDesktopPet extends JFrame {
             friendshipManager.decrease(2.0);//friendship level will drop 2 points
             if(friendshipManager.isDead()) repaint();
         }).start();
+        new Timer(20000, e -> {
+            if (!isHeld && !friendshipManager.isDead()) {
 
+                int pending = AlertService.latestTaskCount;
+
+                // Console check - look at your terminal at the bottom of IntelliJ!
+                System.out.println("Fox is checking... Tasks found: " + pending);
+
+                if (pending > 0) {
+                    // Priority: Nagging
+                    speak(new FoxTaskAlert(pending));
+                } else if (Math.random() > 0.7) {
+                    // Normal: Chill talk
+                    speak(new RandomSpeech());
+                }
+            }
+        }).start();
+
+        new Timer(30000, e -> {
+            if (taskManager != null) {
+                // Update the "Billboard" manually here
+                ArrayList<Task> tasks = taskManager.getAlertTasks();
+                AlertService.latestTaskCount = tasks.size();
+            }
+        }).start();
         new Timer(20000, e -> {
             if (!isHeld && !friendshipManager.isDead() && Math.random() > 0.7) {
                 speak(new RandomSpeech());
@@ -682,6 +708,27 @@ public class FoxDesktopPet extends JFrame {
             }
         }
     }
+    public static class FoxTaskAlert implements FoxSpeech {
+        private int taskCount;
+        private String[] variations = {
+                " %d tasks due soon!",
+                "Check your Task Manager!",
+                " You have %d tasks waiting!",
+                "Berry sees %d tasks on your plate."
+        };
+
+        // Constructor to receive the number of tasks from AlertService
+        public FoxTaskAlert(int count) {
+            this.taskCount = count;
+        }
+
+        @Override
+        public String getDialogue() {
+            // Pick a random variation and inject the number of tasks
+            String line = variations[new Random().nextInt(variations.length)];
+            return String.format(line, taskCount);
+        }
+    }
    public class RandomSpeech implements FoxSpeech {
        private String[] lines = {"I like my new home.", "I am feeling bored.", "Pets please!", "You are a great person", "Berry misses you", "Did you forget\n about me?", "Berry well done!","Fun Fact:Foxes\ncan whistle.","I am hungry."};
        private Random object = new Random();
@@ -692,7 +739,7 @@ public class FoxDesktopPet extends JFrame {
 
    }
 //------------------------------------------------------------
-    private void speak(FoxSpeech speech){
+protected void speak(FoxSpeech speech){
         if(friendshipManager.isDead()) return;
         String line=speech.getDialogue();
         if (activeBubble != null) { activeBubble.dispose(); activeBubble = null; }
@@ -744,10 +791,27 @@ public class FoxDesktopPet extends JFrame {
         }
         public void showAt(int x, int y) { setLocation(x, y); setVisible(true); }
     }
+    public void setTaskManager(TaskManager manager) {
+        this.taskManager = manager;
+        manager.load();
+
+        int overdueCount = manager.countOverdue();
+        if (overdueCount > 0) {
+            friendshipManager.decrease(overdueCount * 5.0);//friendship will decrease if you do not complete your tasks
+        }
+
+        AlertService.latestTaskCount = manager.getAlertTasks().size();
+        AlertService alertService = new AlertService(FoxDesktopPet.this, manager);
+        alertService.checkAndAlert();
+    }
 
     public static void main(String[] args) {
-       // new java.io.File(".fox_status.dat").delete(); for ressurecting the fox back
-        SwingUtilities.invokeLater(FoxDesktopPet::new);
+        SwingUtilities.invokeLater(() -> {
+            TaskManager manager = new TaskManager();
+            FoxDesktopPet fox = new FoxDesktopPet();
+            fox.setTaskManager(manager);
+            fox.setVisible(true);
+        });
     }
 }
 class VisualFlowMenu extends JWindow {
@@ -766,8 +830,8 @@ class VisualFlowMenu extends JWindow {
 
        //For creating a flowchart type menu with the further functionalities of the fox
         JButton pomo = createNode("Pomodoro", 155, 200, new Color(255, 107, 107));
-        JButton task = createNode("Tasks", 280, 110, new Color(78, 205, 196));
-        JButton pray = createNode("Prayer", 30, 110, new Color(255, 217, 61));
+        JButton task = createNode("Task Manager", 280, 110, new Color(78, 205, 196));
+        JButton pray = createNode("Prayer Manager", 30, 110, new Color(255, 217, 61));
         JButton jour = createNode("My Journal", 155, 20, new Color(162, 155, 254));
 
         // For now, these just close the menu so you can see the animation

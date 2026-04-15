@@ -304,7 +304,11 @@ public class AddTaskDialog extends JDialog {
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
+        manager.addTask(result);
 
+// 2. TELL THE ALERT SERVICE TO RE-CHECK EVERYTHING RIGHT NOW
+// This updates 'latestTaskCount' so the Fox hears it
+        new AlertService((JFrame)getOwner(), manager).checkAndAlert(); //added by minahil
         dispose(); // close the dialog
     }
 
