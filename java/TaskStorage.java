@@ -15,12 +15,6 @@ public class TaskStorage {
             "id,taskType,title,subject,description,difficulty," + "submissionDate,completed,createdAt,extra1,extra2";
     public static void saveTasks(ArrayList<Task> tasks) {
         try {
-            File file = new File(FILE_NAME).getAbsoluteFile();
-
-            // 2. This creates the 'resources' subfolder if it doesn't exist
-            if (file.getParentFile() != null) {
-                file.getParentFile().mkdirs();
-            }
             FileWriter   fw = new FileWriter(FILE_NAME);
             BufferedWriter bw = new BufferedWriter(fw);
 
@@ -132,7 +126,7 @@ public class TaskStorage {
                     + quote(t.getCreatedAt().format(Task.SAVE_FORMAT))     + ","
                     + quote(extra1)                                        + ","
                     + quote(extra2);
-
+//have to fix this
         return line;
     }
     //this above converts task to line 
@@ -140,7 +134,7 @@ public class TaskStorage {
     //builds task from line
     private static Task buildTaskFromLine(String line) {
         try {
-            //
+
             String[] parts = splitCSV(line);
 
             if (parts.length < 11) return null;
@@ -195,13 +189,13 @@ public class TaskStorage {
         }
     }
 
-    // ── Wrap a value in double quotes ─────────────────────────────────────────
     // This prevents commas inside a value from breaking the CSV format
     private static String quote(String value) {
-        if (value == null) value = "";
+        if (value == null)
+            value = ""; //changes space to ""
         // If the value has a quote inside it, escape it by doubling it
         value = value.replace("\"", "\"\"");
-        return "\"" + value + "\"";
+        return "\"" + value + "\"";//includes quotation between each value
     }
 
     //splits file

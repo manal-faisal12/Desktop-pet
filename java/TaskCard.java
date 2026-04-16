@@ -58,7 +58,7 @@ public class TaskCard extends JPanel {
         });
         left.add(Box.createVerticalGlue());
         left.add(checkBox);
-        left.add(Box.createVerticalGlue());
+        left.add(Box.createVerticalGlue()); //creates vertical glue component
         add(left, BorderLayout.WEST);
 
         // ── Centre: task info ─────────────────────────────────────────────────
@@ -72,7 +72,7 @@ public class TaskCard extends JPanel {
         titleRow.setOpaque(false);
 
         JLabel titleLabel = new JLabel(task.getTitle());
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        titleLabel.setFont(new Font("Segue UI", Font.BOLD, 14));
         if (task.getCompleted()) {
             // Show strikethrough if completed
             titleLabel.setText("<html><s>" + task.getTitle() + "</s></html>");
@@ -96,12 +96,12 @@ public class TaskCard extends JPanel {
         centre.add(subjectLabel);
         centre.add(Box.createVerticalStrut(4));
 
-        // Description (if any)
+        // Description
         if (!task.getDescription().isEmpty()) {
             String desc = task.getDescription();
             if (desc.length() > 70) desc = desc.substring(0, 67) + "...";
             JLabel descLabel = new JLabel(desc);
-            descLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+            descLabel.setFont(new Font("Segue UI", Font.ITALIC, 11));
             descLabel.setForeground(SUBTLE);
             centre.add(descLabel);
             centre.add(Box.createVerticalStrut(4));
