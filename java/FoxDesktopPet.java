@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.Random;//for random dialogue selection
 
 //---------------Using enum for different states of the pet--------------
-enum PetState {                                                 //Maxticks: Timer for transitioning in other states
+enum PetState {                                                 //Maxtimer: Timer for transitioning in other states
     IDLE           (1,         14,        200),//while stopping during roam
     WALKING        (2,          8,        600),//while  roaming
     SITTING        (0,          5,         -1),
@@ -20,24 +20,24 @@ enum PetState {                                                 //Maxticks: Time
 
     private final int spriteRow;//row of animation
     private final int maxFrames;//total number of frames of the animation
-    private final int maxTicks;//timer
+    private final int maxTimer;//timer
 
-    PetState(int spriteRow, int maxFrames, int maxTicks) {//constructor for petstate
+    PetState(int spriteRow, int maxFrames, int maxTimer) {//constructor for petstate
         this.spriteRow = spriteRow;
         this.maxFrames = maxFrames;
-        this.maxTicks  = maxTicks;
+        this.maxTimer  = maxTimer;
     }
 //---------get methods for attributes of pet state----------
     public int getSpriteRow()  { return spriteRow; }
     public int getMaxFrames()  { return maxFrames; }
-    public boolean hasTimeLimit() { return maxTicks > 0; }
-    public int getMaxTicks()   { return maxTicks; }
+    public boolean hasTimeLimit() { return maxTimer > 0; }
+    public int getMaxTimer()   { return maxTimer; }
     public boolean isStationary() {
         return this == SITTING || this == STAYING || this == HELD || this == DEAD;//to stop it from moving during picking it u
     }
 }
 
-class PetContext {
+class PetDetail{
     public Point   location;
     public double  dx, dy;
     public int     stateTimer;
@@ -45,7 +45,7 @@ class PetContext {
     public int     batteryLevel;
     public int     windowW, windowH;
 
-    public PetContext(Point location, double dx, double dy, int stateTimer,
+    public PetDetail(Point location, double dx, double dy, int stateTimer,
                       boolean isFacingLeft, int batteryLevel, int windowW, int windowH) {
         this.location     = location;
         this.dx           = dx;
@@ -60,7 +60,7 @@ class PetContext {
 
 abstract class BehaviourHandler {
     protected static final Dimension SCREEN = Toolkit.getDefaultToolkit().getScreenSize();
-    public abstract PetState tick(PetContext ctx);
+    public abstract PetState tick(PetDetail ctx);
     protected Point clamp(Point p, int w, int h) {//for making a boundary for the random movement of the fox
         int x = Math.max(0, Math.min(p.x, SCREEN.width  - w));
         int y = Math.max(0, Math.min(p.y, SCREEN.height - h));
@@ -71,7 +71,7 @@ abstract class BehaviourHandler {
 class IdleBehaviour extends BehaviourHandler {
     @Override
 
-    public PetState tick(PetContext ctx) {
+    public PetState tick(PetDetail ctx) {
 
         ctx.dx = 0;
 
@@ -79,7 +79,7 @@ class IdleBehaviour extends BehaviourHandler {
 
         ctx.stateTimer++;
 
-        if (PetState.IDLE.hasTimeLimit() && ctx.stateTimer > PetState.IDLE.getMaxTicks()) {
+        if (PetState.IDLE.hasTimeLimit() && ctx.stateTimer > PetState.IDLE.getMaxTimer()) {
 
             ctx.stateTimer = 0;
 
@@ -123,7 +123,7 @@ class WalkingBehaviour extends BehaviourHandler {
 
     @Override
 
-    public PetState tick(PetContext ctx) {
+    public PetState tick(PetDetail ctx) {
 
         ctx.stateTimer++;
 
@@ -141,7 +141,7 @@ class WalkingBehaviour extends BehaviourHandler {
 
         ctx.location = clamp(new Point(nx, ny), ctx.windowW, ctx.windowH);
 
-        if (PetState.WALKING.hasTimeLimit() && ctx.stateTimer > PetState.WALKING.getMaxTicks()) {
+        if (PetState.WALKING.hasTimeLimit() && ctx.stateTimer > PetState.WALKING.getMaxTimer()) {
 
             ctx.stateTimer = 0;
 
@@ -157,7 +157,7 @@ class WalkingBehaviour extends BehaviourHandler {
 
 class SittingBehaviour extends BehaviourHandler {
     @Override
-    public PetState tick(PetContext ctx) {
+    public PetState tick(PetDetail ctx) {
         ctx.dx = 0;
         ctx.dy = 0;
         return null;
@@ -169,15 +169,17 @@ class SittingBehaviour extends BehaviourHandler {
 // ════════════════════════════════════════════════════════════════════════════
 class FriendshipManager {
     private static final String SAVE_FILE = ".fox_status.dat";
-    private double friendship = 50.0;
+    public double friendship = 50.0;
     private boolean isDead = false;
     private JProgressBar bar;
 
     public FriendshipManager() { load(); }
 
+
+
     public void increase(double amount) {
         if (isDead) return;
-        friendship = Math.min(friendship + amount, 100.0);
+        friendship = Math.min(friendship + amount, 100.0);//friendship can not be more than 100
         refreshBar();
         save();
     }
@@ -209,12 +211,7 @@ class FriendshipManager {
             isDead     = in.readBoolean();
         } catch (IOException e) { e.printStackTrace(); }
     }
-    public void reset() {
-        friendship = 50.0;
-        isDead = false;
-        refreshBar();
-        save();
-    }
+
     private void refreshBar() {
         if (bar != null) bar.setValue((int) friendship);
     }
@@ -279,7 +276,7 @@ class SpriteAnimator {
 public class FoxDesktopPet extends JFrame {
 
     private static final int PET_SCALE = 128;
-    private final FriendshipManager friendshipManager = new FriendshipManager();
+    public final FriendshipManager friendshipManager = new FriendshipManager();
     private SpriteAnimator animator;
     private BehaviourHandler currentBehaviour = new IdleBehaviour();
     private PetState currentState = PetState.IDLE;
@@ -502,7 +499,7 @@ public class FoxDesktopPet extends JFrame {
 
     private void updateMovement() {
         if (isHeld || friendshipManager.isDead()) return;
-        PetContext ctx = new PetContext(getLocation(), dx, dy, stateTimer, isFacingLeft, batteryLevel, PET_SCALE, PET_SCALE + 100);
+        PetDetail ctx = new PetDetail(getLocation(), dx, dy, stateTimer, isFacingLeft, batteryLevel, PET_SCALE, PET_SCALE + 100);
         PetState next = currentBehaviour.tick(ctx);
         dx = ctx.dx; dy = ctx.dy; stateTimer = ctx.stateTimer; isFacingLeft = ctx.isFacingLeft;
         if (!ctx.location.equals(getLocation())) {
@@ -713,7 +710,7 @@ public class FoxDesktopPet extends JFrame {
                 " %d tasks due soon!",
                 "Check your Task Manager!",
                 " You have %d tasks waiting!",
-                "Berry sees %d tasks on your plate."
+                " %d tasks on your plate."
         };
 
         // Constructor to receive the number of tasks from AlertService
