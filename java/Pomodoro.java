@@ -10,8 +10,10 @@ public class Pomodoro extends JFrame {
     private CardLayout cardLayout = new CardLayout(); // used to switch b/w 2 panels
     private JPanel container = new JPanel(cardLayout);  // holds the cards
     private PomodoroPanel pomodoroPanel;
+    // ── ADDED: track fullscreen state ──────────────────────────────────────────
+    private boolean isFullscreen = false;
+    // ───────────────────────────────────────────────────────────────────────────
     public Pomodoro() {
-
         setTitle("FOCUS MANAGER");
         setSize(700, 650);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -36,6 +38,16 @@ public class Pomodoro extends JFrame {
         add(container);
         setVisible(true);
 
+        // listener for the F/f key (toggle fullscreen)
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+                    if (e.getID() == java.awt.event.KeyEvent.KEY_PRESSED
+                            && e.getKeyChar() == 'f' || e.getID() == java.awt.event.KeyEvent.KEY_PRESSED
+                            && e.getKeyChar() == 'F') {
+                        toggleFullscreen();
+                        return true;
+                    }
+                    return false;
+                });
 
     }
     public boolean isCurrentlyOnBreak() {
@@ -45,6 +57,21 @@ public class Pomodoro extends JFrame {
         cardLayout.show(container, name);
     }
 
+    //this is to toggle between full screen and normal
+    public void toggleFullscreen() {
+        isFullscreen = !isFullscreen;
+        dispose();                           // must dispose before setUndecorated
+        setUndecorated(isFullscreen);        // remove title bar in fullscreen
+        if (isFullscreen) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            setExtendedState(JFrame.NORMAL);
+            setSize(700, 650);
+            setLocationRelativeTo(null);
+        }
+        setVisible(true);
+    }
+    // MAIN
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Pomodoro());
 
@@ -61,6 +88,14 @@ class PomodoroPanel extends JPanel {
     private DecoratedPanel panel;
     private Timer timer;
     public boolean isbreak;
+    
+    // these are for the focus mode
+    private int targetCycles  = 0; // given by user
+    private int completedCycles = 0; // depends on the time
+    private boolean focusMode = false; // when focus mode in on/off
+    private RoundedButton focusb; // focus button
+    private JLabel cycleLabel; // displays the current cycle
+    // ───────────────────────────────────────────────────────────────────────────
 
     public PomodoroPanel(Pomodoro mainFrame) {
         setLayout(new BorderLayout());
@@ -72,58 +107,121 @@ class PomodoroPanel extends JPanel {
         toAudio.addActionListener(e -> mainFrame.switchPanel("AMBIENT PLAYER"));
         navBar.add(toAudio);
 
-        Font lexend; // load different fonts
+        // another navigation bar button, to get full screen (if you dont want to press F)
+        JButton fullScreen = new JButton("⛶ F = Fullscreen");
+        fullScreen.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        fullScreen.setForeground(new Color(160, 100, 100));
+        fullScreen.setContentAreaFilled(false);
+        fullScreen.setBorderPainted(false);
+        fullScreen.addActionListener(e -> mainFrame.toggleFullscreen());
+        navBar.add(fullScreen);
+
+        Font lexend; // load different custom fonts
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream("Resources- PP/bluewinter.ttf");
             lexend = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(100f);
         } catch (Exception ex) {
             lexend = new Font("Arial", Font.PLAIN, 48);
         }
+        // photos for pomodoro panel
         URL strawURL = getClass().getClassLoader().getResource("Resources- PP/strawberry.png");
         URL coffeeURL = getClass().getClassLoader().getResource("Resources- PP/coffee.png");
 
-         // 2. Load the base icons (checking for null so it doesn't crash)
+        // Load the icons (check for null so it doesn't crash)
         ImageIcon strawberryIcon = (strawURL != null) ? new ImageIcon(strawURL) : new ImageIcon();
         ImageIcon coffeeIcon = (coffeeURL != null) ? new ImageIcon(coffeeURL) : new ImageIcon();
         scaledStrawberry = new ImageIcon(strawberryIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
         scaledCoffee = new ImageIcon(coffeeIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
 
+        // countdown timer
         label = new JLabel("25 : 00");
         label.setFont(lexend.deriveFont(90f));
         label.setForeground(Color.WHITE);
 
-        strawLeft = new JLabel(scaledStrawberry);
+        strawLeft = new JLabel(scaledStrawberry); // icons on left and right of countdown
         strawRight = new JLabel(scaledStrawberry);
 
+        // building the panel to hold icons and timer, in order
         JPanel timerRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         timerRow.setOpaque(false);
         timerRow.add(strawLeft);
         timerRow.add(label);
         timerRow.add(strawRight);
 
+        // title "Pomodoro"
         title = new JLabel("POMODORO");
         title.setFont(lexend.deriveFont(24f));
         title.setForeground(new Color(200, 82, 80));
         title.setAlignmentX(CENTER_ALIGNMENT);
 
-        // button panel: start and restart button
+        // button panel = start, restart, focus button
         JPanel buttonpanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonpanel.setOpaque(false);
+        //startbutton
         startb = new RoundedButton("START", new Color(200, 82, 80));
         startb.setForeground(Color.WHITE);
         startb.setFont(lexend.deriveFont(28f));
         startb.addActionListener(e -> timer.start());
-
-
+        // restartbutton
         restartb = new RoundedButton("RESTART", new Color(149, 170, 140));
         restartb.setFont(lexend.deriveFont(28f));
         restartb.setForeground(Color.WHITE);
-        restartb.addActionListener(e -> restartTimer()
-        );
+        restartb.addActionListener(e -> { // if focus mode is ON
+            if (focusMode) {
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "You're in Focus Mode!\nRestarting will end your current session.\nAre you sure?",
+                        "End Focus Session?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                if (choice == JOptionPane.YES_OPTION) {
+                    exitFocusMode();
+                    restartTimer();
+                }
+            } else {
+                restartTimer(); // else it is set to 25:00 normally
+            }
+        });
+        // ───────────────────────────────────────────────────────────────────────
 
+        /* focus button for focus mode
+           focus mode is when you set a number of cycles to work throughout,
+           ultra focus because of full screen mode */
+        focusb = new RoundedButton("FOCUS", new Color(240, 240, 176));
+        focusb.setFont(lexend.deriveFont(28f));
+        focusb.setForeground(Color.WHITE);
+        focusb.addActionListener(e -> startFocusMode());
+        focusb.addActionListener(e -> { // check if focus is already ON
+            if (focusMode) {
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "You're in Focus Mode!\nThis will end your current session.\nAre you sure?",
+                        "End Focus Session?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                if (choice == JOptionPane.YES_OPTION) {
+                    exitFocusMode();
+                    restartTimer();
+                }
+            }
+                else {
+                restartTimer();
+            }
+        });
+
+        // building the button panel (has 3 buttons)
+        buttonpanel.add(focusb);
         buttonpanel.add(startb);
         buttonpanel.add(restartb);
 
+        // curretn cycle label
+        cycleLabel = new JLabel(" ");   // blank until focus mode starts
+        cycleLabel.setFont(lexend.deriveFont(16f));
+        cycleLabel.setForeground(new Color(180, 130, 200));
+        cycleLabel.setAlignmentX(CENTER_ALIGNMENT);
+        // ───────────────────────────────────────────────────────────────────────
+
+        // build the main panel,adding components moving top to bottom
         JPanel content = new JPanel(); // start adding all components
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
@@ -133,17 +231,19 @@ class PomodoroPanel extends JPanel {
         content.add(timerRow);
         content.add(Box.createRigidArea(new Dimension(0, 10)));
         content.add(buttonpanel);
+        content.add(Box.createRigidArea(new Dimension(0, 10)));
+        content.add(cycleLabel);
         content.add(Box.createVerticalGlue());
 
-        // the image on left and right borders
+        // the images on left and right borders
         panel = new DecoratedPanel(strawberryIcon.getImage(), coffeeIcon.getImage());
         panel.setLayout(new BorderLayout());
         panel.setBackground(new Color(249, 213, 211));
         panel.add(navBar, BorderLayout.NORTH);
         panel.add(content, BorderLayout.CENTER);
-
         add(panel);
 
+        // actual timer for the COUNTDOWN
         timer = new Timer(1000, e -> {
             secleft--;
             label.setText(String.format("%02d : %02d", secleft / 60, secleft % 60));
@@ -174,6 +274,15 @@ class PomodoroPanel extends JPanel {
             strawRight.setIcon(scaledStrawberry);
             FoxDesktopPet.announce(false);
 
+            // ── ADDED: count completed cycles in focus mode ────────────────────
+            if (focusMode) {
+                completedCycles++;
+                cycleLabel.setText("Cycle " + completedCycles + " / " + targetCycles + " complete");
+                if (completedCycles >= targetCycles) {
+                    showCongrats();
+                }
+            }
+            // ───────────────────────────────────────────────────────────────────
         }
         panel.repaint();
 
@@ -205,6 +314,53 @@ class PomodoroPanel extends JPanel {
             System.err.println("Error playing alert: " + ex.getMessage());
         }
     }
+
+    private void startFocusMode() {
+        String input = JOptionPane.showInputDialog(
+                null,
+                "How many cycles do you want to complete?\n(1 cycle = 25 min work + 5 min break)",
+                "Start Focus Session",
+                JOptionPane.QUESTION_MESSAGE);
+        if (input == null || input.trim().isEmpty()) return;   // user cancelled
+        try {
+            int n = Integer.parseInt(input.trim());
+            if (n <= 0) throw new NumberFormatException();
+            targetCycles    = n;
+            completedCycles = 0;
+            focusMode       = true;
+            startb.setVisible(false);          // hide START button in focus mode
+            cycleLabel.setText("Cycle 0 / " + targetCycles + " complete");
+            restartTimer();                    // reset to clean state
+            timer.start();                     // auto-start the session
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Please enter a valid positive number.",
+                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    // if focus mode completed
+    private void showCongrats() {
+        timer.stop();
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "🎉 Amazing work! You completed " + targetCycles
+                            + " cycle" + (targetCycles > 1 ? "s" : "") + "!\n"
+                            + "Take a proper rest — you've earned it.",
+                    "Session Complete!",
+                    JOptionPane.INFORMATION_MESSAGE);
+            exitFocusMode();
+        });
+    }
+
+    private void exitFocusMode() {
+        focusMode       = false;
+        targetCycles    = 0;
+        completedCycles = 0;
+        startb.setVisible(true);       // bring START button back
+        cycleLabel.setText(" ");       // clear the cycle label
+    }
+    // ───────────────────────────────────────────────────────────────────────────
 
     class RoundedButton extends JButton { //custom round button
         private Color color;
