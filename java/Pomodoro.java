@@ -200,6 +200,7 @@ class PomodoroPanel extends JPanel {
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 if (choice == JOptionPane.YES_OPTION) {
+                    FoxDesktopPet.currentFox.friendshipManager.decrease(0.6);//if you quit your session early without completely friendship will decrease
                     exitFocusMode();
                     restartTimer();
                 }
@@ -350,6 +351,7 @@ class PomodoroPanel extends JPanel {
                     "Session Complete!",
                     JOptionPane.INFORMATION_MESSAGE);
             exitFocusMode();
+            FoxDesktopPet.currentFox.friendshipManager.increase(0.6);//added by Minahil
         });
     }
 
