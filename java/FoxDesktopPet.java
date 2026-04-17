@@ -713,6 +713,7 @@ public class FoxDesktopPet extends JFrame {
                 " %d tasks on your plate."
         };
 
+
         // Constructor to receive the number of tasks from AlertService
         public FoxTaskAlert(int count) {
             this.taskCount = count;
@@ -723,6 +724,25 @@ public class FoxDesktopPet extends JFrame {
             // Pick a random variation and inject the number of tasks
             String line = variations[new Random().nextInt(variations.length)];
             return String.format(line, taskCount);
+        }
+    }
+    public static class FoxPrayersMissed implements FoxSpeech {
+        int missed;
+        Random object = new Random();
+
+        public FoxPrayersMissed(int missed) {
+            this.missed = missed;
+        }
+
+        private String[] prayerlines = {
+                "%d prayers missed.",
+                "Be careful next time!"
+        };
+
+
+        public String getDialogue() {
+            String line = prayerlines[object.nextInt(prayerlines.length)];
+            return String.format(line, missed);
         }
     }
    public class RandomSpeech implements FoxSpeech {

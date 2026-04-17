@@ -130,6 +130,11 @@ public class PrayerManager {
         Timer midnightChecker = new Timer(60000, e -> {
             LocalTime now = LocalTime.now();
             if (now.getHour() == 0 && now.getMinute() == 0) {
+                int missed=5-getPrayerCount();
+                if(missed>0 && FoxDesktopPet.currentFox!=null){   //friendship will decrease according to the number of prayers missed
+                    FoxDesktopPet.currentFox.friendshipManager.decrease(missed*2);
+                    FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxPrayersMissed(missed));//invoking the specific dialogue for prayers missed
+                }
                 resetChecklist(); // all prayers unchecked at midnight (for the new day)
             }
         });
