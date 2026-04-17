@@ -231,25 +231,25 @@ public class Dashboard extends JFrame {
 
     //refresh deletes everything in panel and loads array list based on filter
     public void refresh() {
-        taskListPanel.removeAll();
-        ArrayList<Task> toShow;  //creates arraylist
+        taskListPanel.removeAll();//part of awt that removes all components from container
+        ArrayList<Task> New_Array;  //creates arraylist
 
         if (activeFilter.equals("All")) {
-            toShow = manager.getTasks();
+            New_Array = manager.getTasks();
         }
         else if (activeFilter.equals("Completed")) {
-            toShow = manager.filterCompleted();
+            New_Array = manager.filterCompleted();
         }
         else if (activeFilter.equals("Overdue")) {
-            toShow = manager.filterOverdue();
+            New_Array = manager.filterOverdue();
         }
         else {
-            toShow = manager.filterByType(activeFilter);
+            New_Array = manager.filterByType(activeFilter);
         }
         //filters by type and creates arraylist of type
 
-        // Show a message if the list is empty
-        if (toShow.isEmpty()) {
+        //if list is empty display msg, sets labels look and feel
+        if (New_Array.isEmpty()) {
             JLabel empty = new JLabel("No tasks added yet", SwingConstants.CENTER);
             empty.setFont(new Font("Segue UI", Font.ITALIC, 14));
             empty.setForeground(SUBTLE);
@@ -260,12 +260,12 @@ public class Dashboard extends JFrame {
 
         } else {
             // Add one TaskCard for each task
-            for (final Task t : toShow) {
+            for (final Task t : New_Array) {
                 // Runnable is like a simple action it tells the card what to do when toggled/deleted
                 Runnable onToggle = new Runnable() { //operation does not return result
-                    public void run() {
+                    public void run() {//part of the runnable that allows multiple threads to work at the same time
                         manager.Completed_Flip(t.getId());
-                        refresh();
+                        refresh(); //refreshs the dashboard
                     }
                 };
 

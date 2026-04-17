@@ -15,6 +15,7 @@ public class TaskManager {
         TaskStorage.saveTasks(tasks);
     }
 
+    //adds
     public void addTask(Task t) {
         tasks.add(t);
         save();
