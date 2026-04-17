@@ -20,6 +20,7 @@ public class TaskManager {
         save();
     }
 
+    //this code removes task based on the id
     void removeTask(String id) {
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getId().equals(id)) {
@@ -29,7 +30,9 @@ public class TaskManager {
         }
         save();
     }
-    Task findById(String id) {
+
+    //finds task based on id
+    Task Task_Id(String id) {
         for (Task task : tasks) {
             if (task.getId().equals(id)) {
                 return task;
@@ -38,18 +41,20 @@ public class TaskManager {
         return null;
     }
 
-    void toggleCompletion(String id) {
-        Task t = findById(id);
+    //if task found by id then flip the task to opposite of what it is
+    void Completed_Flip(String id) {
+        Task t = Task_Id(id);
         if (t != null) {
             t.setCompleted(!t.getCompleted());
             save();
         }
     }
-    ArrayList<Task> getAllTasks() {
+
+    ArrayList<Task> getTasks() {
         return tasks;
     }
 
-    int countCompleted() {
+    int Completed_Number() {
         int count = 0;
         for (Task task : tasks) {
             if (task.getCompleted()) {

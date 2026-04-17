@@ -13,9 +13,9 @@ import java.awt.event.*;
 
 public class TaskCard extends JPanel {
 
-    private static final Color BG_NORMAL  = new Color(0x1A1A2E);
-    private static final Color BG_DONE    = new Color(0x141420);
-    private static final Color BG_OVERDUE = new Color(0x2A1420);
+    private static final Color Blue_Dark  = new Color(0x1A1A2E);
+    private static final Color Blue_Darker = new Color(0x141420);
+    private static final Color Overdue_Color = new Color(0x2A1420);
     private static final Color BG_SOON    = new Color(0x1A240A);
     private static final Color TEXT       = new Color(0xF0F0FF);
     private static final Color SUBTLE     = new Color(0x8888AA);
@@ -23,11 +23,14 @@ public class TaskCard extends JPanel {
     private static final Color SUCCESS    = new Color(0x00C897);
     private static final Color WARNING    = new Color(0xF5A623);
     private static final Color DANGER     = new Color(0xFF4D6D);
+    //colors for the panel
 
-    // Store the task and the callbacks
+
     private Task     task;
     private Runnable onToggle;
     private Runnable onDelete;
+    //threadable will allow multiple part of the program to work together
+    //runnable extends thread so still call and override run without extending 2 classes
 
     public TaskCard(Task task, Runnable onToggle, Runnable onDelete) {
         this.task     = task;
@@ -35,10 +38,10 @@ public class TaskCard extends JPanel {
         this.onDelete = onDelete;
 
         setLayout(new BorderLayout(10, 0));
-        setBackground(getCardColor());
+        setBackground(Card_Color());
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 105));
         setBorder(new CompoundBorder(
-            new LineBorder(getBorderColor(), 1),
+            new LineBorder(Border_Color(), 1),
             new EmptyBorder(10, 12, 10, 12)));
 
         // checkbox for completed
@@ -82,7 +85,7 @@ public class TaskCard extends JPanel {
         }
 
         JLabel typeBadge = makeBadge(task.getTaskType(), ACCENT);
-        JLabel diffBadge = makeBadge(task.getDifficulty(), getDiffColor());
+        JLabel diffBadge = makeBadge(task.getDifficulty(), Difficulty_Color());
 
         titleRow.add(titleLabel);
         titleRow.add(typeBadge);
@@ -117,7 +120,7 @@ public class TaskCard extends JPanel {
 
         JLabel statusLabel = new JLabel(task.getStatus()); //jlabel will print out the message if completed
         statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        statusLabel.setForeground(getStatusColor());
+        statusLabel.setForeground(Status_Color());
 
         dateRow.add(dueLabel);
         dateRow.add(statusLabel);
@@ -152,38 +155,45 @@ public class TaskCard extends JPanel {
         add(rightPanel, BorderLayout.EAST);
     }
 
-    // ── Helper: pick background color based on task state ────────────────────
-    private Color getCardColor() {
-        if (task.getCompleted())  return BG_DONE;
-        if (task.isOverdue())    return BG_OVERDUE;
-        if (task.isDueSoon(1))   return BG_SOON;
-        return BG_NORMAL;
+    //color depends on the function
+    private Color Card_Color() {
+        if (task.getCompleted())
+            return Blue_Darker;
+        if (task.isOverdue())
+            return Overdue_Color;
+        if (task.isDueSoon(1))
+            return BG_SOON;
+        else
+            return Blue_Dark;
     }
 
-    private Color getBorderColor() {
-        if (task.getCompleted())  return new Color(0x333348);
-        if (task.isOverdue())    return DANGER.darker();
-        if (task.isDueSoon(1))   return new Color(0x4A6A10);
-        return new Color(0x2D2D4A);
+    private Color Border_Color() {
+        if (task.getCompleted())
+            return new Color(0x333348);
+        if (task.isOverdue())
+            return DANGER.darker();
+        if (task.isDueSoon(1))
+            return new Color(0x4A6A10);
+        else
+            return new Color(0x2D2D4A);
     }
 
-    private Color getStatusColor() {
+    private Color Status_Color() {
         if (task.getCompleted())  return SUCCESS;
         if (task.isOverdue())    return DANGER;
         if (task.isDueSoon(1))   return WARNING;
         return SUCCESS;
     }
 
-    private Color getDiffColor() {
+    private Color Difficulty_Color() {
         if (task.getDifficulty().equals("Easy"))   return SUCCESS;
         if (task.getDifficulty().equals("Hard"))   return DANGER;
         return WARNING; // Medium
     }
 
-    // ── Helper: make a small colored badge label ─────────────────────────────
     private JLabel makeBadge(String text, Color color) {
         JLabel lb = new JLabel("  " + text + "  ");
-        lb.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        lb.setFont(new Font("Segue UI", Font.BOLD, 10));
         lb.setForeground(color);
         lb.setBackground(color.darker().darker());
         lb.setOpaque(true);

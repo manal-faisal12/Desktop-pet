@@ -235,7 +235,7 @@ public class Dashboard extends JFrame {
         ArrayList<Task> toShow;  //creates arraylist
 
         if (activeFilter.equals("All")) {
-            toShow = manager.getAllTasks();
+            toShow = manager.getTasks();
         }
         else if (activeFilter.equals("Completed")) {
             toShow = manager.filterCompleted();
@@ -264,7 +264,7 @@ public class Dashboard extends JFrame {
                 // Runnable is like a simple action it tells the card what to do when toggled/deleted
                 Runnable onToggle = new Runnable() { //operation does not return result
                     public void run() {
-                        manager.toggleCompletion(t.getId());
+                        manager.Completed_Flip(t.getId());
                         refresh();
                     }
                 };
@@ -293,7 +293,7 @@ public class Dashboard extends JFrame {
         // Update the stats panel
         statsPanel.update(
             manager.totalTasks(),
-            manager.countCompleted(),
+            manager.Completed_Number(),
             manager.countPending(),
             manager.countOverdue()
         );
