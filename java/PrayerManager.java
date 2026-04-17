@@ -166,7 +166,7 @@ public class PrayerManager {
                 }
 
                 URL url = new URL("http://api.aladhan.com/v1/timingsByCity" +
-                        "?city=" + city + "&country=" + country + "&method=1");
+                        "?city=" + city + "&country=" + country + "&method=1&school=1");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
 
