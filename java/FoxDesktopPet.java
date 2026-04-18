@@ -175,6 +175,11 @@ class FriendshipManager {
 
     public FriendshipManager() { load(); }
 
+    public void reset() {
+        friendship = 50.0;
+        isDead = false;
+        save();
+    }
 
 
     public void increase(double amount) {
@@ -296,9 +301,11 @@ public class FoxDesktopPet extends JFrame {
     private VisualFlowMenu activeFlowMenu = null; // will see whether the flowchart menu is open or not
     public static FoxDesktopPet currentFox;
     private TaskManager taskManager;
+
     public FoxDesktopPet() {
         currentFox = this;
-        //friendshipManager.reset(); for resetting the friendship
+
+        //friendshipManager.reset(); //for resetting the friendship
 
         //friendshipManager.decrease(200); for testing death of the fox
         if (friendshipManager.isDead()) {
@@ -331,6 +338,7 @@ public class FoxDesktopPet extends JFrame {
 
         new Timer(5000, e -> System.exit(0)).start();
     }
+
     private void triggerJumpscare() {
         JWindow scare = new JWindow();
         scare.setAlwaysOnTop(true);
@@ -356,6 +364,7 @@ public class FoxDesktopPet extends JFrame {
         exitTimer.setRepeats(false);
         exitTimer.start();
     }
+
     private void setupWindow() {
         setUndecorated(true);
         setBackground(new Color(0, 0, 0, 0));
@@ -379,19 +388,25 @@ public class FoxDesktopPet extends JFrame {
     }
 
     private void transitionTo(PetState newState) {
-        if(friendshipManager.isDead()) return;
+        if (friendshipManager.isDead()) return;
         currentState = newState;
         stateTimer = 0;
         switch (newState) {
-            case IDLE: currentBehaviour = new IdleBehaviour(); break;
-            case WALKING: currentBehaviour = new WalkingBehaviour(); break;
+            case IDLE:
+                currentBehaviour = new IdleBehaviour();
+                break;
+            case WALKING:
+                currentBehaviour = new WalkingBehaviour();
+                break;
             case SITTING:
-            case STAYING: currentBehaviour = new SittingBehaviour(); break;
+            case STAYING:
+                currentBehaviour = new SittingBehaviour();
+                break;
         }
     }
 
     private void setupMouseInteractions() {
-        if(friendshipManager.isDead()) return;
+        if (friendshipManager.isDead()) return;
         petLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -406,6 +421,7 @@ public class FoxDesktopPet extends JFrame {
                 }
                 lastStrokePoint = p;
             }
+
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (dragOffset == null) return;
@@ -414,7 +430,7 @@ public class FoxDesktopPet extends JFrame {
                 int nx = Math.max(0, Math.min(mouse.x - dragOffset.x, scr.width - PET_SCALE));
                 int ny = Math.max(0, Math.min(mouse.y - (dragOffset.y + 50), scr.height - (PET_SCALE + 100)));
                 setLocation(nx, ny);
-                if (activeBubble != null) activeBubble.setLocation(nx - 10, ny +25);
+                if (activeBubble != null) activeBubble.setLocation(nx - 10, ny + 25);
                 petLabel.setBounds(0, 20, PET_SCALE, PET_SCALE);
             }
         });
@@ -424,16 +440,21 @@ public class FoxDesktopPet extends JFrame {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     dragOffset = e.getPoint();
-                    dx = 0; dy = 0; isHeld = true;
+                    dx = 0;
+                    dy = 0;
+                    isHeld = true;
                     closeMenu();
                 }
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
-                dragOffset = null; isHeld = false;
+                dragOffset = null;
+                isHeld = false;
                 petLabel.setBounds(0, 50, PET_SCALE, PET_SCALE);
                 transitionTo(isStaying ? PetState.STAYING : PetState.IDLE);
             }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
@@ -441,7 +462,7 @@ public class FoxDesktopPet extends JFrame {
                         activeFlowMenu.dispose();
                     }
                     activeFlowMenu = new VisualFlowMenu(getLocationOnScreen());//using the updated location received from updatemovement() class make the flowchart follow the fox
-                   // if u click elsewhere,the flowchart menu will close
+                    // if u click elsewhere,the flowchart menu will close
                     activeFlowMenu.setVisible(true);
                     activeFlowMenu.requestFocus();
 
@@ -463,7 +484,7 @@ public class FoxDesktopPet extends JFrame {
         // NEGLECT TIMER: Friendship will drop every 30 minutes
         new Timer(1800000, e -> {
             friendshipManager.decrease(2.0);//friendship level will drop 2 points
-            if(friendshipManager.isDead()) repaint();
+            if (friendshipManager.isDead()) repaint();
         }).start();
         new Timer(20000, e -> {
             if (!isHeld && !friendshipManager.isDead()) {
@@ -501,13 +522,16 @@ public class FoxDesktopPet extends JFrame {
         if (isHeld || friendshipManager.isDead()) return;
         PetDetail ctx = new PetDetail(getLocation(), dx, dy, stateTimer, isFacingLeft, batteryLevel, PET_SCALE, PET_SCALE + 100);
         PetState next = currentBehaviour.tick(ctx);
-        dx = ctx.dx; dy = ctx.dy; stateTimer = ctx.stateTimer; isFacingLeft = ctx.isFacingLeft;
+        dx = ctx.dx;
+        dy = ctx.dy;
+        stateTimer = ctx.stateTimer;
+        isFacingLeft = ctx.isFacingLeft;
         if (!ctx.location.equals(getLocation())) {
             setLocation(ctx.location);
-            if (activeBubble != null) activeBubble.setLocation(getX() - 10, getY() +25);
+            if (activeBubble != null) activeBubble.setLocation(getX() - 10, getY() + 25);
         }
         if (next != null) transitionTo(next);
-       //to make the flowchart follow the fox,give the updated location to the mouse clicked class
+        //to make the flowchart follow the fox,give the updated location to the mouse clicked class
         if (activeFlowMenu != null && activeFlowMenu.isVisible()) {
             Point loc = getLocationOnScreen();
             // Use the same offset math used in the Menu constructor
@@ -526,12 +550,15 @@ public class FoxDesktopPet extends JFrame {
             activeMenu = null;
             friendshipManager.setBar(null);
             if (!isStaying && !friendshipManager.isDead()) transitionTo(PetState.IDLE);
-            if (activeFlowMenu != null) { activeFlowMenu.dispose(); activeFlowMenu = null; }
+            if (activeFlowMenu != null) {
+                activeFlowMenu.dispose();
+                activeFlowMenu = null;
+            }
         }
     }
 
     private void showMenu(MouseEvent e) {
-        if(friendshipManager.isDead()) return;
+        if (friendshipManager.isDead()) return;
         closeMenu();
         JFrame menuFrame = new JFrame();
         menuFrame.setUndecorated(true);
@@ -548,7 +575,8 @@ public class FoxDesktopPet extends JFrame {
                         g.drawImage(new ImageIcon(bgUrl).getImage(), 0, 0, getWidth(), getHeight(), this);
                         return;
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 g.setColor(new Color(245, 222, 179));
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -586,8 +614,14 @@ public class FoxDesktopPet extends JFrame {
             transitionTo(isStaying ? PetState.STAYING : PetState.IDLE);
             closeMenu();
         });
-        feedBtn.addActionListener(al -> { closeMenu(); handleFeedAction(); });
-        exitBtn.addActionListener(al -> { friendshipManager.save(); System.exit(0); });
+        feedBtn.addActionListener(al -> {
+            closeMenu();
+            handleFeedAction();
+        });
+        exitBtn.addActionListener(al -> {
+            friendshipManager.save();
+            System.exit(0);
+        });
 
         panel.add(energyLabel);
         panel.add(Box.createVerticalStrut(4));
@@ -608,8 +642,12 @@ public class FoxDesktopPet extends JFrame {
         Point loc = petLabel.getLocationOnScreen();
         menuFrame.setLocation(loc.x + e.getX(), loc.y + e.getY());
         menuFrame.addWindowFocusListener(new WindowFocusListener() {
-            public void windowGainedFocus(WindowEvent we) {}
-            public void windowLostFocus(WindowEvent we) { closeMenu(); }
+            public void windowGainedFocus(WindowEvent we) {
+            }
+
+            public void windowLostFocus(WindowEvent we) {
+                closeMenu();
+            }
         });
         menuFrame.setVisible(true);
     }
@@ -622,7 +660,10 @@ public class FoxDesktopPet extends JFrame {
                 FontMetrics fm = g.getFontMetrics();
                 g.drawString(getText(), 0, fm.getAscent());
             }
-            @Override protected void paintBorder(Graphics g) {}
+
+            @Override
+            protected void paintBorder(Graphics g) {
+            }
         };
         btn.setOpaque(false);
         btn.setContentAreaFilled(false);
@@ -655,15 +696,18 @@ public class FoxDesktopPet extends JFrame {
         wakeUp.setRepeats(false);
         wakeUp.start();
     }
-//Interface used for different dialogues of the fox
+
+    //Interface used for different dialogues of the fox
     interface FoxSpeech {
         String getDialogue();
     }
+
     public class FoodSpeech implements FoxSpeech {
         public String getDialogue() {
             return "YUMMMM! BERRILIOUS.";
         }
     }
+
     public class BatterySpeech implements FoxSpeech {
         private String[] lines = {"I am feeling quite sleepy....", "I need some rest.", "Let me sleep Hooman", "BERRY WANTS TO SLEEP"};
         private Random object = new Random();
@@ -674,20 +718,21 @@ public class FoxDesktopPet extends JFrame {
         }
 
     }
+
     public static void announce(boolean isBreak) {
-        Random object=new Random();
+        Random object = new Random();
         if (currentFox != null) {
             if (isBreak) {
                 String[] breakLines = {
-                    "Yay! Break time!",
-                    "Time for a berry snack!",
-                    "You earned this rest,hooman!",
-                    "Stretch those legs!",
-                    "You did great." ,
-                    "Ready for another session?",
-                    "You earned your treat."
-            };
-                int index=object.nextInt(breakLines.length);
+                        "Yay! Break time!",
+                        "Time for a berry snack!",
+                        "You earned this rest,hooman!",
+                        "Stretch those legs!",
+                        "You did great.",
+                        "Ready for another session?",
+                        "You earned your treat."
+                };
+                int index = object.nextInt(breakLines.length);
                 currentFox.speak(() -> breakLines[index]);
             } else {
                 String[] focusLines = {
@@ -699,14 +744,15 @@ public class FoxDesktopPet extends JFrame {
                         "No distractions Hooman.",
                         "Tick Tock."
                 };
-              int index=object.nextInt(focusLines.length);
+                int index = object.nextInt(focusLines.length);
                 currentFox.speak(() -> focusLines[index]);
             }
         }
     }
+
     public static class FoxTaskAlert implements FoxSpeech {
         private int taskCount;
-        private String[] variations = {
+        private String[] taskAlert = {
                 " %d tasks due soon!",
                 "Check your Task Manager!",
                 " You have %d tasks waiting!",
@@ -719,13 +765,29 @@ public class FoxDesktopPet extends JFrame {
             this.taskCount = count;
         }
 
-        @Override
+
         public String getDialogue() {
             // Pick a random variation and inject the number of tasks
-            String line = variations[new Random().nextInt(variations.length)];
+            String line = taskAlert[new Random().nextInt(taskAlert.length)];
             return String.format(line, taskCount);
         }
     }
+ public static class FoxOverdue implements FoxSpeech{
+        private int count;
+        public FoxOverdue(int count){
+            this.count=count;
+        }
+        private String[] overduelines={
+               "%d tasks overdue",
+                "Be careful next time!",
+                "Maybe next time..",
+                "Fulfill your duties/"
+        };
+        public String getDialogue(){
+           String overdue=overduelines[new Random().nextInt(overduelines.length)];
+           return String.format(overdue,count);
+        }
+ }
     public static class FoxPrayersMissed implements FoxSpeech {
         int missed;
         Random object = new Random();
@@ -745,38 +807,52 @@ public class FoxDesktopPet extends JFrame {
             return String.format(line, missed);
         }
     }
-   public class RandomSpeech implements FoxSpeech {
-       private String[] lines = {"I like my new home.", "I am feeling bored.", "Pets please!", "You are a great person", "Berry misses you", "Did you forget\n about me?", "Berry well done!","Fun Fact:Foxes\ncan whistle.","I am hungry."};
-       private Random object = new Random();
 
-       public String getDialogue() {
-           return lines[object.nextInt(lines.length)];
-       }
+    public class RandomSpeech implements FoxSpeech {
+        private String[] lines = {"I like my new home.", "I am feeling bored.", "Pets please!", "You are a great person", "Berry misses you", "Did you forget\n about me?", "Berry well done!", "Fun Fact:Foxes\ncan whistle.", "I am hungry."};
+        private Random object = new Random();
 
-   }
-//------------------------------------------------------------
-protected void speak(FoxSpeech speech){
-        if(friendshipManager.isDead()) return;
-        String line=speech.getDialogue();
-        if (activeBubble != null) { activeBubble.dispose(); activeBubble = null; }
-      transitionTo(isStaying?PetState.STAYING:PetState.IDLE);//if pet is in stay here command it will keep still else it will start moving
+        public String getDialogue() {
+            return lines[object.nextInt(lines.length)];
+        }
+
+    }
+
+    //------------------------------------------------------------
+    protected void speak(FoxSpeech speech) {
+        if (friendshipManager.isDead()) return;
+        String line = speech.getDialogue();
+        if (activeBubble != null) {
+            activeBubble.dispose();
+            activeBubble = null;
+        }
+        transitionTo(isStaying ? PetState.STAYING : PetState.IDLE);//if pet is in stay here command it will keep still else it will start moving
         activeBubble = new FoxBubble(line);
-        activeBubble.showAt(getX() - 10, getY() +25 );
-        Timer timer = new Timer(4000, e -> { if (activeBubble != null) { activeBubble.dispose(); activeBubble = null; } });//dispose the previous bubble and form a new one
+        activeBubble.showAt(getX() - 10, getY() + 25);
+        Timer timer = new Timer(4000, e -> {
+            if (activeBubble != null) {
+                activeBubble.dispose();
+                activeBubble = null;
+            }
+        });//dispose the previous bubble and form a new one
         timer.setRepeats(false);
         timer.start();
     }
 
     private void spawnHeart() {
-        if(friendshipManager.isDead()) return;
+        if (friendshipManager.isDead()) return;
         JLabel heart = new JLabel();
         URL url = getClass().getResource("/heart.png");//obtaining heart png for the resources root
-        if (url != null) heart.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
+        if (url != null)
+            heart.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH)));
         heart.setBounds(PET_SCALE / 2 - 20, 50, 40, 40);
         layeredPane.add(heart, JLayeredPane.POPUP_LAYER);
         new Timer(30, ev -> {
             heart.setLocation(heart.getX(), heart.getY() - 4);
-            if (heart.getY() < -40) { layeredPane.remove(heart); ((Timer) ev.getSource()).stop(); }
+            if (heart.getY() < -40) {
+                layeredPane.remove(heart);
+                ((Timer) ev.getSource()).stop();
+            }
         }).start();
     }
 
@@ -785,16 +861,20 @@ protected void speak(FoxSpeech speech){
             Process p = Runtime.getRuntime().exec("powershell (Get-WmiObject -Class Win32_Battery).EstimatedChargeRemaining");//this command fetchs the device's battery
             Scanner s = new Scanner(p.getInputStream());
             int level = s.hasNextInt() ? s.nextInt() : 100;
-            if (level < 20 && !friendshipManager.isDead()) speak(new BatterySpeech());//if battay is less than 20 it is evoke a dialogue
+            if (level < 20 && !friendshipManager.isDead())
+                speak(new BatterySpeech());//if battay is less than 20 it is evoke a dialogue
             return level;
-        } catch (Exception e) { return 100; }
+        } catch (Exception e) {
+            return 100;
+        }
     }
 
     public class FoxBubble extends JWindow {
         public FoxBubble(String text) {
             JLabel label = new JLabel(text);
             URL url = getClass().getResource("/bubble1.png");
-            if (url != null) label.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(180, 100, Image.SCALE_SMOOTH)));
+            if (url != null)
+                label.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(180, 100, Image.SCALE_SMOOTH)));
             label.setHorizontalTextPosition(JLabel.CENTER);
             label.setVerticalTextPosition(JLabel.CENTER);
             label.setVerticalAlignment(JLabel.TOP);
@@ -805,8 +885,13 @@ protected void speak(FoxSpeech speech){
             setAlwaysOnTop(true);
             pack();
         }
-        public void showAt(int x, int y) { setLocation(x, y); setVisible(true); }
+
+        public void showAt(int x, int y) {
+            setLocation(x, y);
+            setVisible(true);
+        }
     }
+
     public void setTaskManager(TaskManager manager) {
         this.taskManager = manager;
         manager.load();
@@ -827,6 +912,7 @@ protected void speak(FoxSpeech speech){
             FoxDesktopPet fox = new FoxDesktopPet();
             fox.setTaskManager(manager);
             fox.setVisible(true);
+            //currentFox.friendshipManager.increase(20000);
 
         });
     }
@@ -855,9 +941,9 @@ class VisualFlowMenu extends JWindow {
         // For now, these just close the menu so you can see the animation
         ActionListener closeAction = e -> dispose();
         pomo.addActionListener(e -> { Pomodoro myPomo = new Pomodoro();
-            // Create a new timer that nags you every 30 seconds
-            Timer nagTimer = new Timer(60000, event -> {
-                // If the window was closed, stop nagging
+            // Create a new timer that reminds you every 30 seconds
+            Timer remindTimer = new Timer(60000, event -> {
+                // If the window was closed, stop saying the dialpgues
                 if (!myPomo.isVisible()) {
                     ((Timer)event.getSource()).stop();
                     return;
@@ -867,7 +953,7 @@ class VisualFlowMenu extends JWindow {
                 boolean onBreak = myPomo.isCurrentlyOnBreak();
                 FoxDesktopPet.announce(onBreak);
             });
-            nagTimer.start();
+            remindTimer.start();
             dispose();
         });
 
@@ -875,7 +961,10 @@ class VisualFlowMenu extends JWindow {
             MainTaskManager.main(null); // Just run the Task Manager's main method!
             dispose();
         });
-        pray.addActionListener(closeAction);
+        pray.addActionListener(e->
+            {PrayerManager.main(null);
+               dispose();}
+        );
         jour.addActionListener(e->{FoxJournal MyJournal =new FoxJournal();//inheritance is used here
             MyJournal.setVisible(true);//the journal will be visible
             dispose();});//for closing the menu

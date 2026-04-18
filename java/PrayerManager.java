@@ -50,7 +50,7 @@ public class PrayerManager {
         panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         // TITLE
-        JLabel title = new JLabel("🌙 Prayer Times");
+        JLabel title = new JLabel(" Prayer Times");
         title.setFont(bluewinter.deriveFont(36f));
         title.setForeground(new Color(100, 60, 140));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -215,7 +215,7 @@ public class PrayerManager {
                     playPrayerAlert();
                     SwingUtilities.invokeLater(() ->
                             JOptionPane.showMessageDialog(frame,
-                                    "It's time for " + prayerName + " prayer! 🌙",
+                                    "It's time for " + prayerName + " prayer! ",
                                     "Prayer Reminder",
                                     JOptionPane.INFORMATION_MESSAGE));
                 }

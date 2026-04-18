@@ -177,6 +177,7 @@ class PomodoroPanel extends JPanel {
                 if (choice == JOptionPane.YES_OPTION) {
                     exitFocusMode();
                     restartTimer();
+                    FoxDesktopPet.currentFox.friendshipManager.decrease(20.6);//if you quit your session early without completely friendship will decrease
                 }
             } else {
                 restartTimer(); // else it is set to 25:00 normally
@@ -200,7 +201,7 @@ class PomodoroPanel extends JPanel {
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 if (choice == JOptionPane.YES_OPTION) {
-                    FoxDesktopPet.currentFox.friendshipManager.decrease(0.6);//if you quit your session early without completely friendship will decrease
+
                     exitFocusMode();
                     restartTimer();
                 }
@@ -351,7 +352,7 @@ class PomodoroPanel extends JPanel {
                     "Session Complete!",
                     JOptionPane.INFORMATION_MESSAGE);
             exitFocusMode();
-            FoxDesktopPet.currentFox.friendshipManager.increase(0.6);//added by Minahil
+            FoxDesktopPet.currentFox.friendshipManager.increase(9.6);//added by Minahil
         });
     }
 

@@ -23,7 +23,13 @@ public class AlertService {
             ArrayList<Task> alertTasks = manager.getAlertTasks();
             latestTaskCount = alertTasks.size();
             if (alertTasks.size() == 0) return;
-
+            int overdueCount = manager.countOverdue();
+            int maxtimes=0;
+            if (overdueCount > 0 && FoxDesktopPet.currentFox != null && maxtimes<3) {
+                FoxDesktopPet.currentFox.friendshipManager.decrease(overdueCount * 5.0);//each task missed means 5 less friendship
+                FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(overdueCount));
+                maxtimes++;
+            }
             if (FoxDesktopPet.currentFox != null) {//added by Minahil
                 FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(alertTasks.size()));
             }
