@@ -17,6 +17,7 @@ public class AlertService {
         this.owner   = owner;
         this.manager = manager;
     }
+    private int maxtimes = 0;
     public static int latestTaskCount = 0;
     // Called once when the app starts
         public void checkAndAlert() {
@@ -24,13 +25,13 @@ public class AlertService {
             latestTaskCount = alertTasks.size();
             if (alertTasks.size() == 0) return;
             int overdueCount = manager.countOverdue();
-            int maxtimes=0;
+
             if (overdueCount > 0 && FoxDesktopPet.currentFox != null && maxtimes<3) {
-                FoxDesktopPet.currentFox.friendshipManager.decrease(overdueCount * 5.0);//each task missed means 5 less friendship
-                FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(overdueCount));
+                FoxDesktopPet.currentFox.friendshipManager.decrease(overdueCount * 0.2);//each task missed means less friendship/trust each time u open the fox without completing overdue tasks it will lose trust in u
+                FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxOverdue(overdueCount));
                 maxtimes++;
             }
-            if (FoxDesktopPet.currentFox != null) {//added by Minahil
+            if (FoxDesktopPet.currentFox != null) {//added by Minahil alerts that the task is almost overdue
                 FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(alertTasks.size()));
             }
 

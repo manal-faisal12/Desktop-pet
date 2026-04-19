@@ -164,9 +164,9 @@ class SittingBehaviour extends BehaviourHandler {
     }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
+
 //  MODIFIED FriendshipManager: Handles Death Logic
-// ════════════════════════════════════════════════════════════════════════════
+
 class FriendshipManager {
     private static final String SAVE_FILE = ".fox_status.dat";
     public double friendship = 50.0;
@@ -192,14 +192,15 @@ class FriendshipManager {
     public void decrease(double amount) {
         if (isDead) return;
         friendship = Math.max(friendship - amount, 0.0);
-        if (friendship <= 0) isDead = true;
+        if (friendship <= 0 ) isDead = true;
         refreshBar();
         save();
     }
 
     public boolean isDead()      { return isDead; }
     public double getTotal()     { return friendship; }
-    public void setBar(JProgressBar bar) { this.bar = bar; refreshBar(); }
+    public void setBar(JProgressBar bar) { this.bar = bar;
+        refreshBar(); }
 
     public void save() {
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(SAVE_FILE))) {
@@ -305,7 +306,7 @@ public class FoxDesktopPet extends JFrame {
     public FoxDesktopPet() {
         currentFox = this;
 
-        //friendshipManager.reset(); //for resetting the friendship
+       // friendshipManager.reset(); //for resetting the friendship
 
         //friendshipManager.decrease(200); for testing death of the fox
         if (friendshipManager.isDead()) {
@@ -477,7 +478,7 @@ public class FoxDesktopPet extends JFrame {
     private void initTimers() {
         TaskManager taskManager = null;
         batteryLevel = getSystemBattery();
-        new Timer(60000, e -> batteryLevel = getSystemBattery()).start();//after a short delay fetch devices's battery again
+        new Timer(60000, e -> batteryLevel = getSystemBattery()).start();//after a 1minute delay fetch devices's battery again
         new Timer(30, e -> updateMovement()).start();
         new Timer(100, e -> updateAnimation()).start();//after some time update the animation(idle,walking)
 
@@ -513,7 +514,7 @@ public class FoxDesktopPet extends JFrame {
         }).start();
         new Timer(20000, e -> {
             if (!isHeld && !friendshipManager.isDead() && Math.random() > 0.7) {
-                speak(new RandomSpeech());
+                speak(new RandomSpeech()); //will speak the Random lines
             }
         }).start();
     }
@@ -680,13 +681,13 @@ public class FoxDesktopPet extends JFrame {
     private void handleFeedAction() {
         friendshipManager.increase(0.8);
         speak(new FoodSpeech());
-        transitionTo(PetState.SITTING); // Berry sits to eat
+        transitionTo(PetState.SITTING); // the fox will stop moving to initiate the dialogue
 
         // Updated Timer to respect the "Stay" command
         Timer wakeUp = new Timer(4000, e -> {
             if (!isHeld && !friendshipManager.isDead()) {
-                // Check the boolean we toggled in the menu!
-                if (isStaying) {
+
+                if (isStaying) { //check if it is under the stay command,if yes then it will stay that way
                     transitionTo(PetState.STAYING);
                 } else {
                     transitionTo(PetState.IDLE);
@@ -719,22 +720,25 @@ public class FoxDesktopPet extends JFrame {
 
     }
 
-    public static void announce(boolean isBreak) {
+    public static class FoxBreak implements FoxSpeech {
         Random object = new Random();
-        if (currentFox != null) {
-            if (isBreak) {
-                String[] breakLines = {
-                        "Yay! Break time!",
-                        "Time for a berry snack!",
-                        "You earned this rest,hooman!",
-                        "Stretch those legs!",
-                        "You did great.",
-                        "Ready for another session?",
-                        "You earned your treat."
-                };
-                int index = object.nextInt(breakLines.length);
-                currentFox.speak(() -> breakLines[index]);
-            } else {
+        String[] breakLines = {
+                "Yay! Break time!",
+                "Time for a berry snack!",
+                "You earned this rest,hooman!",
+                "Stretch those legs!",
+                "You did great.",
+                "Ready for another session?",
+                "You earned your treat."
+        };
+        int index = object.nextInt(breakLines.length);
+
+        public String getDialogue() {
+            return breakLines[object.nextInt(breakLines.length)];
+        }
+    }
+            public static class FoxFocus implements FoxSpeech{
+        Random object=new Random();
                 String[] focusLines = {
                         "You are doing great.",
                         "Keep working hard!",
@@ -744,9 +748,14 @@ public class FoxDesktopPet extends JFrame {
                         "No distractions Hooman.",
                         "Tick Tock."
                 };
-                int index = object.nextInt(focusLines.length);
-                currentFox.speak(() -> focusLines[index]);
-            }
+                public String getDialogue(){
+                    return  focusLines[object.nextInt(focusLines.length)];
+                }
+        }
+    public  static void announce(boolean isBreak) {
+        if (currentFox != null) {
+            FoxSpeech speech = isBreak ? new FoxBreak() : new FoxFocus();
+            currentFox.speak(speech);
         }
     }
 
@@ -779,9 +788,10 @@ public class FoxDesktopPet extends JFrame {
         }
         private String[] overduelines={
                "%d tasks overdue",
-                "Be careful next time!",
-                "Maybe next time..",
-                "Fulfill your duties/"
+                "%d tasks on your plate.",
+                "Complete %d tasks.",
+                "Hooman!Tasks pending"
+
         };
         public String getDialogue(){
            String overdue=overduelines[new Random().nextInt(overduelines.length)];
@@ -798,7 +808,8 @@ public class FoxDesktopPet extends JFrame {
 
         private String[] prayerlines = {
                 "%d prayers missed.",
-                "Be careful next time!"
+                "Be careful next time!",
+                "You can do better."
         };
 
 
