@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 import javax.sound.sampled.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.InputStream;// added these to assist in locating the resources successfully
 import java.net.URL;
@@ -10,8 +11,8 @@ public class Pomodoro extends JFrame {
     private CardLayout cardLayout = new CardLayout(); // used to switch b/w 2 panels
     private JPanel container = new JPanel(cardLayout);  // holds the cards
     private PomodoroPanel pomodoroPanel;
-    // ── ADDED: track fullscreen state ──────────────────────────────────────────
     private boolean isFullscreen = false;
+
     // ───────────────────────────────────────────────────────────────────────────
     public Pomodoro() {
         setTitle("FOCUS MANAGER");
@@ -39,45 +40,51 @@ public class Pomodoro extends JFrame {
         setVisible(true);
 
         // listener for the F/f key (toggle fullscreen)
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-                    if (e.getID() == java.awt.event.KeyEvent.KEY_PRESSED
-                            && e.getKeyChar() == 'f' || e.getID() == java.awt.event.KeyEvent.KEY_PRESSED
-                            && e.getKeyChar() == 'F') {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (e.getID() == java.awt.event.KeyEvent.KEY_PRESSED && (e.getKeyChar() == 'F' || e.getKeyChar() == 'f')) {
+                    Window currentWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
+                    if (currentWindow == Pomodoro.this) {
                         toggleFullscreen();
                         return true;
                     }
-                    return false;
-                });
-
-    }
-    public boolean isCurrentlyOnBreak() {
-        return pomodoroPanel.isbreak;
-    }
-    public void switchPanel(String name) { // there are two panels, pomodoro and ambience
-        cardLayout.show(container, name);
+                }
+                return false;
+            }
+        });
     }
 
-    //this is to toggle between full screen and normal
-    public void toggleFullscreen() {
-        isFullscreen = !isFullscreen;
-        dispose();                           // must dispose before setUndecorated
-        setUndecorated(isFullscreen);        // remove title bar in fullscreen
-        if (isFullscreen) {
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-        } else {
-            setExtendedState(JFrame.NORMAL);
-            setSize(700, 650);
-            setLocationRelativeTo(null);
+        public boolean isCurrentlyOnBreak () {
+            return pomodoroPanel.isbreak;
         }
-        setVisible(true);
-    }
+        public void switchPanel (String name){ // there are two panels, pomodoro and ambience
+            cardLayout.show(container, name);
+        }
+
+        //this is to toggle between full screen and normal
+        public void toggleFullscreen () {
+            isFullscreen = !isFullscreen;
+            dispose();                           // must dispose before setUndecorated
+            setUndecorated(isFullscreen);        // remove title bar in fullscreen
+            if (isFullscreen) {
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
+            } else {
+                setExtendedState(JFrame.NORMAL);
+                setSize(700, 650);
+                setLocationRelativeTo(null);
+            }
+            setVisible(true);
+        }
+
+
     // MAIN
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Pomodoro());
 
     }
-
 }
+
 
 //  POMODORO panel
 class PomodoroPanel extends JPanel {
@@ -183,7 +190,6 @@ class PomodoroPanel extends JPanel {
                 restartTimer(); // else it is set to 25:00 normally
             }
         });
-        // ───────────────────────────────────────────────────────────────────────
 
         /* focus button for focus mode
            focus mode is when you set a number of cycles to work throughout,
@@ -276,7 +282,7 @@ class PomodoroPanel extends JPanel {
             strawRight.setIcon(scaledStrawberry);
             FoxDesktopPet.announce(false);
 
-            // ── ADDED: count completed cycles in focus mode ────────────────────
+            // count completed cycles in focus mode ────────────────────
             if (focusMode) {
                 completedCycles++;
                 cycleLabel.setText("Cycle " + completedCycles + " / " + targetCycles + " complete");
@@ -284,7 +290,6 @@ class PomodoroPanel extends JPanel {
                     showCongrats();
                 }
             }
-            // ───────────────────────────────────────────────────────────────────
         }
         panel.repaint();
 
@@ -346,9 +351,9 @@ class PomodoroPanel extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(
                     null,
-                    "🎉 Amazing work! You completed " + targetCycles
+                    "Amazing work! You completed " + targetCycles
                             + " cycle" + (targetCycles > 1 ? "s" : "") + "!\n"
-                            + "Take a proper rest — you've earned it.",
+                            + "Have a rest, you've earned it.",
                     "Session Complete!",
                     JOptionPane.INFORMATION_MESSAGE);
             exitFocusMode();

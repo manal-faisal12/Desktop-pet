@@ -4,15 +4,14 @@ import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.Timer;
 import java.util.prefs.Preferences;
+import java.util.Properties;
 
 public class PrayerManager {
     private final String[] pNames = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
@@ -22,10 +21,14 @@ public class PrayerManager {
     private final JFrame frame;
     private final JPanel panel;
     private final JLabel[] times = new JLabel[5];
+    private final JLabel[] nameLabel = new JLabel[5]; // ← add this
     private final JLabel status;
     private String lastPlayedTime = "";
     private Font bluewinter;
+    private boolean isLoading = false;
     Preferences prefs = Preferences.userNodeForPackage(PrayerManager.class);
+    Properties props = new Properties();
+    String prayerRecordsFile = "config.properties";
 
     public PrayerManager() {
         // LOAD FONT
@@ -36,6 +39,7 @@ public class PrayerManager {
         } catch (Exception ex) {
             bluewinter = new Font("Arial", Font.PLAIN, 20);
         }
+
 
         // FRAME
         frame = new JFrame("Prayer Manager");
@@ -72,10 +76,10 @@ public class PrayerManager {
             row.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             // prayers' names
-            JLabel nameLabel = new JLabel(pNames[i]);
-            nameLabel.setFont(bluewinter.deriveFont(22f));
-            nameLabel.setForeground(new Color(80, 50, 120));
-            nameLabel.setPreferredSize(new Dimension(100, 30));
+            nameLabel[i] = new JLabel(pNames[i]);
+            nameLabel[i].setFont(bluewinter.deriveFont(22f));
+            nameLabel[i].setForeground(new Color(80, 50, 120));
+            nameLabel[i].setPreferredSize(new Dimension(100, 30));
 
             // prayer times for each prayer...
             times[i] = new JLabel("loading...");
@@ -88,27 +92,33 @@ public class PrayerManager {
             checkboxes[i].setBackground(new Color(245, 235, 255));
             checkboxes[i].setForeground(new Color(100, 60, 140));
             checkboxes[i].addItemListener(e -> {
+                if (isLoading) return; //  ignore during loading
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     checkedCount++;
-                    nameLabel.setText("<html><strike>" + pNames[index] + "</strike></html>");
+                    nameLabel[index].setText("<html><strike>" + pNames[index] + "</strike></html>");
+                    props.setProperty(String.valueOf(index), "true");
                 } else {
                     checkedCount--;
-                    nameLabel.setText(pNames[index]);
+                    nameLabel[index].setText(pNames[index]);
+                    props.setProperty(String.valueOf(index), "false");
                 }
-                // the prayer score is being updated with every click
                 scoreLabel.setText("Prayers today: " + checkedCount + " / 5");
+                saveRecords();
             });
 
-            row.add(nameLabel);
+            row.add(nameLabel[i]);
             row.add(times[i]);
             row.add(checkboxes[i]);
             panel.add(row);
         }
+        // to check the boxes already checked from earlier in the day
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
         panel.add(scoreLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
+        checkRecords();
+        scoreLabel.setText("Prayers today: " + checkedCount + " / 5");
 
         // STATUS LABEL
         status = new JLabel("Fetching prayer times...");
@@ -125,6 +135,32 @@ public class PrayerManager {
         startMidnightReset(); //
     }
 
+    public void checkRecords() {
+        isLoading = true;
+        try (FileInputStream in = new FileInputStream(prayerRecordsFile)) {
+            props.load(in);
+            for (int i = 0; i < pNames.length; i++) {
+                boolean wasPrayed = Boolean.parseBoolean(props.getProperty(String.valueOf(i), "false"));
+                checkboxes[i].setSelected(wasPrayed);
+                if (wasPrayed) {
+                    checkedCount++;
+                    nameLabel[i].setText("<html><strike>" + pNames[i] + "</strike></html>");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No records file yet.");
+        }
+        isLoading = false;
+    }
+
+    private void saveRecords() {
+        try (FileOutputStream out = new FileOutputStream(prayerRecordsFile)) {
+            props.store(out, "Prayer Records");
+        } catch (IOException e) {
+            System.out.println("Could not save records: " + e.getMessage());
+        }
+    }
+
     // resets all checkboxes at midnight (new day commences)
     private void startMidnightReset() {
         Timer midnightChecker = new Timer(60000, e -> {
@@ -136,6 +172,7 @@ public class PrayerManager {
                     FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxPrayersMissed(missed));//invoking the specific dialogue for prayers missed
                 }
                 resetChecklist(); // all prayers unchecked at midnight (for the new day)
+
             }
         });
         midnightChecker.start();
@@ -147,9 +184,23 @@ public class PrayerManager {
             for (int i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].setSelected(false);
             }
+            for (int i = 0; i < pNames.length; i++) {
+                checkboxes[i].setSelected(false);
+            }
             checkedCount = 0;
+            saveRecords();
         });
     }
+    /* TO RETAIN MEMORY OF PRAYED PRAYERS using Properties
+    // storing checked prayer in properties
+        public void addCheck (String name) {
+        props.setProperty(name, String.valueOf(true));
+        }
+    // unchecking a prayer in properties
+        public void removeCheck (String name) {
+        props.setProperty(name, String.valueOf(false));
+        } */
+
 
     // for the fox to evaluate you
     public int getPrayerCount() {
