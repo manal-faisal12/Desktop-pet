@@ -1,3 +1,4 @@
+// pomodoro
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.sound.sampled.*;
@@ -55,27 +56,27 @@ public class Pomodoro extends JFrame {
         });
     }
 
-        public boolean isCurrentlyOnBreak () {
-            return pomodoroPanel.isbreak;
-        }
-        public void switchPanel (String name){ // there are two panels, pomodoro and ambience
-            cardLayout.show(container, name);
-        }
+    public boolean isCurrentlyOnBreak () {
+        return pomodoroPanel.isbreak;
+    }
+    public void switchPanel (String name){ // there are two panels, pomodoro and ambience
+        cardLayout.show(container, name);
+    }
 
-        //this is to toggle between full screen and normal
-        public void toggleFullscreen () {
-            isFullscreen = !isFullscreen;
-            dispose();                           // must dispose before setUndecorated
-            setUndecorated(isFullscreen);        // remove title bar in fullscreen
-            if (isFullscreen) {
-                setExtendedState(JFrame.MAXIMIZED_BOTH);
-            } else {
-                setExtendedState(JFrame.NORMAL);
-                setSize(700, 650);
-                setLocationRelativeTo(null);
-            }
-            setVisible(true);
+    //this is to toggle between full screen and normal
+    public void toggleFullscreen () {
+        isFullscreen = !isFullscreen;
+        dispose();                           // must dispose before setUndecorated
+        setUndecorated(isFullscreen);        // remove title bar in fullscreen
+        if (isFullscreen) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            setExtendedState(JFrame.NORMAL);
+            setSize(700, 650);
+            setLocationRelativeTo(null);
         }
+        setVisible(true);
+    }
 
 
     // MAIN
@@ -95,7 +96,7 @@ class PomodoroPanel extends JPanel {
     private DecoratedPanel panel;
     private Timer timer;
     public boolean isbreak;
-    
+
     // these are for the focus mode
     private int targetCycles  = 0; // given by user
     private int completedCycles = 0; // depends on the time
@@ -212,7 +213,7 @@ class PomodoroPanel extends JPanel {
                     restartTimer();
                 }
             }
-                else {
+            else {
                 restartTimer();
             }
         });
