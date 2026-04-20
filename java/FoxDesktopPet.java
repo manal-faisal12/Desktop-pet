@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.net.URL;//for creating object of type
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Scanner;
 import java.io.*;
 import java.util.Random;//for random dialogue selection
@@ -488,7 +489,7 @@ public class FoxDesktopPet extends JFrame {
             friendshipManager.decrease(2.0);//friendship level will drop 2 points
             if (friendshipManager.isDead()) repaint();
         }).start();
-        new Timer(20000, e -> {
+        new Timer(40000, e -> {
             if (!isHeld && !friendshipManager.isDead()) {
                 int overdue = (taskManager != null) ? taskManager.countOverdue() : 0;
                 int pending = AlertService.latestTaskCount;
@@ -501,23 +502,27 @@ public class FoxDesktopPet extends JFrame {
                 }
             }
         }).start();
-        new Timer(10000, e -> {
-            if (!friendshipManager.isDead() && prayerReminderCount < 2 && PrayerManager.checkboxes[0] != null) {
-                int missed = 0;
-                LocalTime now = LocalTime.now();
-                for (int i = 0; i < 5; i++) {
-                    if (PrayerManager.pTimes[i] != null && !PrayerManager.checkboxes[i].isSelected()) {
-                        LocalTime pt = LocalTime.parse(PrayerManager.pTimes[i].trim(), DateTimeFormatter.ofPattern("HH:mm"));
-                        if (now.isAfter(pt)) missed++;
+        new Timer(30000, e -> { //use the prayer manager to track the prayers missed in the fox
+            if (!friendshipManager.isDead() && prayerReminderCount < 2) {
+                try {
+                    Properties props = new Properties();
+                    props.load(new FileInputStream("config.properties"));
+                    int missed = 0;
+                    for (int i = 0; i < 5; i++) {
+                        boolean prayed = Boolean.parseBoolean(props.getProperty(String.valueOf(i), "false"));
+                        if (!prayed) missed++;
                     }
-                }
-                if (missed > 0) {
-                    speak(new FoxPrayersMissed(missed));
-                    prayerReminderCount++;
+                    if (missed > 0) {
+                        speak(new FoxPrayersMissed(missed));
+                        prayerReminderCount++;
+                    }
+                } catch (IOException ex) {
+                    // config.properties doesn't exist yet, skip
                 }
             }
         }).start();
-        new Timer(30000, e -> {
+
+        new Timer(40000, e -> {
             if (taskManager != null) {
                 // Update the "Billboard" manually here
                 ArrayList<Task> tasks = taskManager.getAlertTasks();
