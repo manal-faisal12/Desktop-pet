@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 import java.util.Random;//for random dialogue selection
-
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 //---------------Using enum for different states of the pet--------------
 enum PetState {                                                 //Maxtimer: Timer for transitioning in other states
     IDLE           (1,         14,        200),//while stopping during roam
@@ -302,11 +303,11 @@ public class FoxDesktopPet extends JFrame {
     private VisualFlowMenu activeFlowMenu = null; // will see whether the flowchart menu is open or not
     public static FoxDesktopPet currentFox;
     private TaskManager taskManager;
-
+    protected int prayerNagCount = 0;
     public FoxDesktopPet() {
         currentFox = this;
 
-       // friendshipManager.reset(); //for resetting the friendship
+       //friendshipManager.reset(); //for resetting the friendship
 
         //friendshipManager.decrease(200); for testing death of the fox
         if (friendshipManager.isDead()) {
@@ -489,22 +490,33 @@ public class FoxDesktopPet extends JFrame {
         }).start();
         new Timer(20000, e -> {
             if (!isHeld && !friendshipManager.isDead()) {
-
+                int overdue = (taskManager != null) ? taskManager.countOverdue() : 0;
                 int pending = AlertService.latestTaskCount;
-
-                // Console check - look at your terminal at the bottom of IntelliJ!
-                System.out.println("Fox is checking... Tasks found: " + pending);
-
-                if (pending > 0) {
-                    // Priority: Nagging
+                if (overdue > 0) {
+                    speak(new FoxOverdue(overdue));
+                } else if (pending > 0) {
                     speak(new FoxTaskAlert(pending));
                 } else if (Math.random() > 0.7) {
-                    // Normal: Chill talk
                     speak(new RandomSpeech());
                 }
             }
         }).start();
-
+        new Timer(10000, e -> {
+            if (!friendshipManager.isDead() && prayerNagCount < 2 && PrayerManager.checkboxes[0] != null) {
+                int missed = 0;
+                LocalTime now = LocalTime.now();
+                for (int i = 0; i < 5; i++) {
+                    if (PrayerManager.pTimes[i] != null && !PrayerManager.checkboxes[i].isSelected()) {
+                        LocalTime pt = LocalTime.parse(PrayerManager.pTimes[i].trim(), DateTimeFormatter.ofPattern("HH:mm"));
+                        if (now.isAfter(pt)) missed++;
+                    }
+                }
+                if (missed > 0) {
+                    speak(new FoxPrayersMissed(missed));
+                    prayerNagCount++;
+                }
+            }
+        }).start();
         new Timer(30000, e -> {
             if (taskManager != null) {
                 // Update the "Billboard" manually here
