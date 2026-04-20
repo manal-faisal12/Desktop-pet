@@ -181,7 +181,7 @@ public class PrayerManager {
                 if (missed > 0 && FoxDesktopPet.currentFox != null) {
                     FoxDesktopPet.currentFox.friendshipManager.decrease(missed * 0.5);
                     FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxPrayersMissed(missed));
-                    FoxDesktopPet.currentFox.prayerNagCount = 0;
+                    FoxDesktopPet.currentFox.prayerReminderCount = 0;
                 }
                 resetChecklist();
             }

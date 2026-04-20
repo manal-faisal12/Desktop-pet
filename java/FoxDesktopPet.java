@@ -303,7 +303,7 @@ public class FoxDesktopPet extends JFrame {
     private VisualFlowMenu activeFlowMenu = null; // will see whether the flowchart menu is open or not
     public static FoxDesktopPet currentFox;
     private TaskManager taskManager;
-    protected int prayerNagCount = 0;
+    protected int prayerReminderCount = 0;
     public FoxDesktopPet() {
         currentFox = this;
 
@@ -502,7 +502,7 @@ public class FoxDesktopPet extends JFrame {
             }
         }).start();
         new Timer(10000, e -> {
-            if (!friendshipManager.isDead() && prayerNagCount < 2 && PrayerManager.checkboxes[0] != null) {
+            if (!friendshipManager.isDead() && prayerReminderCount < 2 && PrayerManager.checkboxes[0] != null) {
                 int missed = 0;
                 LocalTime now = LocalTime.now();
                 for (int i = 0; i < 5; i++) {
@@ -513,7 +513,7 @@ public class FoxDesktopPet extends JFrame {
                 }
                 if (missed > 0) {
                     speak(new FoxPrayersMissed(missed));
-                    prayerNagCount++;
+                    prayerReminderCount++;
                 }
             }
         }).start();
