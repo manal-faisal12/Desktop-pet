@@ -10,38 +10,31 @@ import java.util.TimerTask;
 import java.net.URL;
 public class Dashboard extends JFrame {
 
-
-    private static final Color BG      = new Color(0x0F0F1A);
-    private static final Color CARD    = new Color(0x1A1A2E);
-    private static final Color ACCENT  = new Color(0x7C3AED);
-    private static final Color ACCENT2 = new Color(0xE040FB);
-    private static final Color TEXT    = new Color(0xF0F0FF);
-    private static final Color SUBTLE  = new Color(0x8888AA);
-
     private TaskManager  manager;
     private StatsPanel   statsPanel;
     private AlertService alertService;
-
-    // The panel that holds all the task cards
-    private JPanel taskListPanel;
-
-    // Which filter is currently active
-    private String activeFilter = "All";
-
-    // Clock labels in the header
+    private JPanel TaskListBox;        //panel holds list of all task cards
+    private String ActiveFilter = "All";        //which filter is on
     private JLabel clockLabel;
     private JLabel dateLabel;
+    //clock labels in the header
 
-    // ── Constructor ───────────────────────────────────────────────────────────
+    private static final Color DarkBlue = new Color(0x0F0F1A);
+    private static final Color Navy = new Color(0x1A1A2E);
+    private static final Color PurpleBlue = new Color(0x7C3AED);
+    private static final Color Purple = new Color(0xE040FB);
+    private static final Color White = new Color(0xF0F0FF);
+    private static final Color GreyPurple = new Color(0x8888AA);
+
     public Dashboard(TaskManager manager) {
-        super("Task Manager");
+        super("Task Manager"); //gives title to the JFrame
         this.manager      = manager;
         this.statsPanel   = new StatsPanel();
         this.alertService = new AlertService(this, manager);
 
         buildUI();
-        refresh();       // show existing tasks
-        startClock();    // start the live clock
+        refresh();       //refreshes to show the updated tasks
+        startClock();    //start the live clock
         URL iconUrl = getClass().getResource("/Main_taskManager/resources/icon_fox.png"); // path to image
         if (iconUrl != null) {
             ImageIcon icon = new ImageIcon(iconUrl);
@@ -49,19 +42,21 @@ public class Dashboard extends JFrame {
         } else {
             System.out.println("Could not find the icon file!");
         }
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(880, 660);
         setMinimumSize(new Dimension(750, 500));
         setLocationRelativeTo(null);
         setVisible(true);
 
-        // Show alerts 800ms after window opens
-        Timer alertTimer = new Timer(true);
+        //UI updates must happen on Event Dispatch Thread
+        //shows alert
+        Timer alertTimer = new Timer(true);//won't keep the program alive if everything else finishes
         alertTimer.schedule(new TimerTask() {
             public void run() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        alertService.checkAndAlert();
+                        alertService.checkAndAlert(); //after 800ms runs this command
                     }
                 });
             }
@@ -69,10 +64,10 @@ public class Dashboard extends JFrame {
     }
 
 
+    //builds UI
     private void buildUI() {
-        getContentPane().setBackground(BG);
+        getContentPane().setBackground(DarkBlue);
         setLayout(new BorderLayout());
-
         add(buildHeader(),  BorderLayout.NORTH);
         add(buildBody(),    BorderLayout.CENTER);
     }
@@ -80,9 +75,9 @@ public class Dashboard extends JFrame {
     //builds header
     private JPanel buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(CARD);
+        header.setBackground(Navy);
         header.setBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, ACCENT),
+            new MatteBorder(0, 0, 1, 0, PurpleBlue),
             new EmptyBorder(12, 22, 12, 22)));
 
         // App name on the left
@@ -90,28 +85,23 @@ public class Dashboard extends JFrame {
         left.setOpaque(false);
         JLabel appName = new JLabel("Task Manager");
         appName.setFont(new Font("Segue UI", Font.BOLD, 22));
-        appName.setForeground(TEXT);
-        /*JLabel subtitle = new JLabel("  Academic Task Manager");
-        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        subtitle.setForeground(SUBTLE);
-        */
+        appName.setForeground(White);
         left.add(appName);
-        //left.add(subtitle);
         header.add(left, BorderLayout.WEST);
 
-        // Live clock on the right
+        //Creates ClockPanel
         JPanel clockPanel = new JPanel();
         clockPanel.setLayout(new BoxLayout(clockPanel, BoxLayout.Y_AXIS));
         clockPanel.setOpaque(false);
 
         clockLabel = new JLabel("--:--:--", SwingConstants.RIGHT);
         clockLabel.setFont(new Font("Segue UI", Font.BOLD, 18));
-        clockLabel.setForeground(ACCENT2);
+        clockLabel.setForeground(Purple);
         clockLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         dateLabel = new JLabel("---", SwingConstants.RIGHT);
         dateLabel.setFont(new Font("Segue UI", Font.PLAIN, 11));
-        dateLabel.setForeground(SUBTLE);
+        dateLabel.setForeground(GreyPurple);
         dateLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         clockPanel.add(clockLabel);
@@ -124,13 +114,13 @@ public class Dashboard extends JFrame {
     //adds scroll filter and sets border the lower panel set
     private JPanel buildBody() {
         JPanel body = new JPanel(new BorderLayout(0, 12));
-        body.setBackground(BG);
+        body.setBackground(DarkBlue);
         body.setBorder(new EmptyBorder(14, 18, 14, 18));
 
         body.add(statsPanel, BorderLayout.NORTH);
 
         JPanel centre = new JPanel(new BorderLayout(0, 10));
-        centre.setBackground(BG);
+        centre.setBackground(DarkBlue);
         centre.add(buildFilterBar(), BorderLayout.NORTH);
         centre.add(buildTaskScroll(), BorderLayout.CENTER);
         body.add(centre, BorderLayout.CENTER);
@@ -142,7 +132,7 @@ public class Dashboard extends JFrame {
     //filter between assignment, project, quiz and etc
     private JPanel buildFilterBar() {
         JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        bar.setBackground(BG);
+        bar.setBackground(DarkBlue);
 
         String[] filters = {"All", "Assignment", "Quiz", "Project", "Lab Report", "Completed", "Overdue"};
         ButtonGroup group = new ButtonGroup();
@@ -150,12 +140,12 @@ public class Dashboard extends JFrame {
         for (final String filter : filters) {
             JToggleButton btn = new JToggleButton(filter);
             btn.setFont(new Font("Segue UI", Font.BOLD, 11));
-            btn.setForeground(TEXT);
-            btn.setBackground(CARD);
+            btn.setForeground(White);
+            btn.setBackground(Navy);
             btn.setBorderPainted(false);
             btn.setFocusPainted(false);
             btn.setBorder(new CompoundBorder(
-                    new LineBorder(SUBTLE.darker(), 1, true),
+                    new LineBorder(GreyPurple.darker(), 1, true),
                     new EmptyBorder(5, 12, 5, 12)));
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -163,7 +153,7 @@ public class Dashboard extends JFrame {
 
             btn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    activeFilter = filter;
+                    ActiveFilter = filter;
                     refresh();
                 }
             });
@@ -175,24 +165,24 @@ public class Dashboard extends JFrame {
         return bar;
     }
 
-    // ── Scrollable task list ──────────────────────────────────────────────────
+    //TaskList on a Scrolling Panel
     private JScrollPane buildTaskScroll() {
-        taskListPanel = new JPanel();
-        taskListPanel.setLayout(new BoxLayout(taskListPanel, BoxLayout.Y_AXIS));
-        taskListPanel.setBackground(BG);
+        TaskListBox = new JPanel(); //attribute of class
+        TaskListBox.setLayout(new BoxLayout(TaskListBox, BoxLayout.Y_AXIS));
+        TaskListBox.setBackground(DarkBlue);
 
-        JScrollPane scroll = new JScrollPane(taskListPanel);
+        JScrollPane scroll = new JScrollPane(TaskListBox);
         scroll.setBorder(null);
-        scroll.getViewport().setBackground(BG);
+        scroll.getViewport().setBackground(DarkBlue);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         return scroll;
     }
 
-    // ── Add Task button at the bottom ─────────────────────────────────────────
+    // Creates the add button which triggers prompt screen
     private JPanel buildAddButton() {
         JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
-        bar.setBackground(BG);
+        bar.setBackground(DarkBlue);
 
         JButton addBtn = new JButton("+") {
             protected void paintComponent(Graphics g) {
@@ -205,8 +195,8 @@ public class Dashboard extends JFrame {
         };
 
         addBtn.setFont(new Font("Segue UI", Font.BOLD, 34));
-        addBtn.setForeground(TEXT);
-        addBtn.setBackground(ACCENT);
+        addBtn.setForeground(White);
+        addBtn.setBackground(PurpleBlue);
         addBtn.setFocusPainted(false);
         addBtn.setContentAreaFilled(false);
         addBtn.setBorderPainted(false);
@@ -216,13 +206,13 @@ public class Dashboard extends JFrame {
 
         addBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                openAddDialog();
+                OpenAddTask();
             }
         });
 
         addBtn.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { addBtn.setBackground(ACCENT2); }
-            public void mouseExited(MouseEvent e)  { addBtn.setBackground(ACCENT); }
+            public void mouseEntered(MouseEvent e) { addBtn.setBackground(Purple); }
+            public void mouseExited(MouseEvent e)  { addBtn.setBackground(PurpleBlue); }
         });
 
         bar.add(addBtn);
@@ -231,20 +221,20 @@ public class Dashboard extends JFrame {
 
     //refresh deletes everything in panel and loads array list based on filter
     public void refresh() {
-        taskListPanel.removeAll();//part of awt that removes all components from container
+        TaskListBox.removeAll();//part of awt that removes all components from container
         ArrayList<Task> New_Array;  //creates arraylist
 
-        if (activeFilter.equals("All")) {
+        if (ActiveFilter.equals("All")) {
             New_Array = manager.getTasks();
         }
-        else if (activeFilter.equals("Completed")) {
+        else if (ActiveFilter.equals("Completed")) {
             New_Array = manager.filterCompleted();
         }
-        else if (activeFilter.equals("Overdue")) {
+        else if (ActiveFilter.equals("Overdue")) {
             New_Array = manager.filterOverdue();
         }
         else {
-            New_Array = manager.filterByType(activeFilter);
+            New_Array = manager.filterByType(ActiveFilter);
         }
         //filters by type and creates arraylist of type
 
@@ -252,22 +242,26 @@ public class Dashboard extends JFrame {
         if (New_Array.isEmpty()) {
             JLabel empty = new JLabel("No tasks added yet", SwingConstants.CENTER);
             empty.setFont(new Font("Segue UI", Font.ITALIC, 14));
-            empty.setForeground(SUBTLE);
+            empty.setForeground(GreyPurple);
             empty.setAlignmentX(Component.CENTER_ALIGNMENT);
-            taskListPanel.add(Box.createVerticalGlue());
-            taskListPanel.add(empty); //empty is the label added to the panel that holds text
-            taskListPanel.add(Box.createVerticalGlue());
+            TaskListBox.add(Box.createVerticalGlue());
+            TaskListBox.add(empty); //empty is the label added to the panel that holds text
+            TaskListBox.add(Box.createVerticalGlue());
 
         } else {
             // Add one TaskCard for each task
             for (final Task t : New_Array) {
-                // Runnable is like a simple action it tells the card what to do when toggled/deleted
-                Runnable onToggle = new Runnable() { //operation does not return result
+                //everytime onClick is called run this instruction
+                // Runnable is like a simple action it tells the card what to do when clicked/deleted
+
+                Runnable onClick = new Runnable() {
+                    //operation does not return result
                     public void run() {//part of the runnable that allows multiple threads to work at the same time
                         manager.Completed_Flip(t.getId());
-                        refresh(); //refreshs the dashboard
+                        refresh(); //refreshes the dashboard
                     }
                 };
+                //used in taskcard creation in Dashboard
 
                 Runnable onDelete = new Runnable() {
                     public void run() {
@@ -283,10 +277,10 @@ public class Dashboard extends JFrame {
                     }
                 };
 
-                TaskCard card = new TaskCard(t, onToggle, onDelete);
+                TaskCard card = new TaskCard(t, onClick, onDelete); //runnable used
                 card.setAlignmentX(Component.LEFT_ALIGNMENT);
-                taskListPanel.add(card);
-                taskListPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                TaskListBox.add(card);
+                TaskListBox.add(Box.createRigidArea(new Dimension(0, 8)));
             }
         }
 
@@ -298,12 +292,12 @@ public class Dashboard extends JFrame {
             manager.countOverdue()
         );
 
-        taskListPanel.revalidate();
-        taskListPanel.repaint();
+        TaskListBox.revalidate();
+        TaskListBox.repaint();
     }
 
-    // ── Open the Add Task dialog ──────────────────────────────────────────────
-    private void openAddDialog() {
+    //opens add task pop up
+    private void OpenAddTask() {
         AddTaskDialog dialog = new AddTaskDialog(this, manager);
         dialog.setVisible(true);
 
@@ -314,15 +308,14 @@ public class Dashboard extends JFrame {
         }
     }
 
-    // ── Live clock: updates every second ─────────────────────────────────────
+    //creates and starts clock
     private void startClock() {
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm:ss a");
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy");
 
-        Timer timer = new Timer(true); // daemon timer — stops when app closes
+        Timer timer = new Timer(true); //stops program if everything else finishes
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                // Always update Swing components on the Event Dispatch Thread
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         LocalDateTime now = LocalDateTime.now();
@@ -331,24 +324,21 @@ public class Dashboard extends JFrame {
                     }
                 });
             }
-        }, 0, 1000); // run immediately, then every 1000ms (1 second)
+        }, 0, 1000); //run immediately and then every 1000ms/1s
     }
 
     public static class AddTaskDialog extends JDialog {
 
 
-        static final Color BG     = new Color(0x0F0F1A);
-        static final Color CARD   = new Color(0x1A1A2E);
-        static final Color ACCENT = new Color(0x7C3AED);
-        static final Color ACCENT2= new Color(0xE040FB);
-        static final Color TEXT   = new Color(0xF0F0FF);
-        static final Color SUBTLE = new Color(0x8888AA);
+        static final Color DarBlue = new Color(0x0F0F1A);
+        static final Color Navy = new Color(0x1A1A2E);
+        static final Color BlueishPurle = new Color(0x7C3AED);
+        static final Color Purple = new Color(0xE040FB);
+        static final Color White = new Color(0xF0F0FF);
+        static final Color Grey = new Color(0x8888AA);
 
-        // The task that was created — null if user canceled
+        //if task not created then null, else created, reference since task is abstract
         private Task result = null;
-        //declaring a reference variable but not assigning anything
-        // abstact do not have objects but this is just a ref
-
         private TaskManager manager;
 
         private JComboBox typeBox;
@@ -387,18 +377,18 @@ public class Dashboard extends JFrame {
         }
 
         private void addTaskBox() {
-            getContentPane().setBackground(BG);
+            getContentPane().setBackground(DarBlue);
             setLayout(new BorderLayout());
             JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 12));
-            header.setBackground(CARD);
-            header.setBorder(new MatteBorder(0, 0, 1, 0, ACCENT));
+            header.setBackground(Navy);
+            header.setBorder(new MatteBorder(0, 0, 1, 0, BlueishPurle));
             JLabel title = new JLabel(" Add New Task");
             title.setFont(new Font("Segue UI", Font.BOLD, 18));
-            title.setForeground(TEXT);
+            title.setForeground(White);
             header.add(title);
             add(header, BorderLayout.NORTH);
             JPanel form = new JPanel();
-            form.setBackground(BG);
+            form.setBackground(DarBlue);
             form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
             form.setBorder(new EmptyBorder(16, 22, 12, 22));
             JPanel row1 = rowPanel();
@@ -425,7 +415,7 @@ public class Dashboard extends JFrame {
             form.add(Box.createVerticalStrut(14));
             JLabel dateLabel = new JLabel(" Submission Date & Time");
             dateLabel.setFont(new Font("Segue UI", Font.BOLD, 13));
-            dateLabel.setForeground(ACCENT2);
+            dateLabel.setForeground(Purple);
             dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             form.add(dateLabel);
             form.add(Box.createVerticalStrut(6));
@@ -435,14 +425,14 @@ public class Dashboard extends JFrame {
             // Extra fields section label
             JLabel extraLabel = new JLabel(" Task Details");
             extraLabel.setFont(new Font("Segue UI", Font.BOLD, 13));
-            extraLabel.setForeground(ACCENT2);
+            extraLabel.setForeground(Purple);
             extraLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             form.add(extraLabel);
             form.add(Box.createVerticalStrut(6));
 
             // Extra fields panel (swapped when type changes)
             extraPanel = new JPanel();
-            extraPanel.setBackground(BG);
+            extraPanel.setBackground(DarBlue);
             extraPanel.setLayout(new BoxLayout(extraPanel, BoxLayout.Y_AXIS));
             extraPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
             buildExtraFields("Assignment"); // show Assignment fields by default
@@ -461,16 +451,16 @@ public class Dashboard extends JFrame {
 
             JScrollPane scroll = new JScrollPane(form);
             scroll.setBorder(null);
-            scroll.getViewport().setBackground(BG);
+            scroll.getViewport().setBackground(DarBlue);
             scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             add(scroll, BorderLayout.CENTER);
 
             JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 10));
-            footer.setBackground(CARD);
-            footer.setBorder(new MatteBorder(1, 0, 0, 0, ACCENT));
+            footer.setBackground(Navy);
+            footer.setBorder(new MatteBorder(1, 0, 0, 0, BlueishPurle));
 
-            JButton cancelBtn = makeButton("x Cancel", SUBTLE);
-            JButton addBtn    = makeButton("+ Add Task  ", ACCENT);
+            JButton cancelBtn = makeButton("x Cancel", Grey);
+            JButton addBtn    = makeButton("+ Add Task  ", BlueishPurle);
 
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) { dispose(); }
@@ -487,7 +477,7 @@ public class Dashboard extends JFrame {
 
         private JPanel buildDateRow() {
             JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-            p.setBackground(BG);
+            p.setBackground(DarBlue);
             p.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             LocalDateTime now = LocalDateTime.now().plusDays(3);
@@ -641,14 +631,16 @@ public class Dashboard extends JFrame {
         }
 
         // Returns the task that was created (or null if cancelled)
-        public Task getResult() { return result; }
+        public Task getResult() {
+            return result;
+        }
 
-        // ── Helper methods for building UI components ─────────────────────────────
+        //building ui Components helper methods
 
         private JPanel rowPanel() {
             JPanel p = new JPanel();
             p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-            p.setBackground(BG);
+            p.setBackground(DarBlue);
             p.setAlignmentX(Component.LEFT_ALIGNMENT);
             return p;
         }
@@ -656,11 +648,11 @@ public class Dashboard extends JFrame {
         private JPanel labeledField(String label, JComponent field, int width) {
             JPanel p = new JPanel();
             p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-            p.setBackground(BG);
+            p.setBackground(DarBlue);
 
             JLabel lb = new JLabel(label);
             lb.setFont(new Font("Segue UI", Font.BOLD, 10));
-            lb.setForeground(SUBTLE);
+            lb.setForeground(Grey);
             lb.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             field.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -674,43 +666,43 @@ public class Dashboard extends JFrame {
 
         private JTextField makeTextField() {
             JTextField tf = new JTextField();
-            tf.setBackground(CARD);
-            tf.setForeground(TEXT);
-            tf.setCaretColor(TEXT);
-            tf.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            tf.setBackground(Navy);
+            tf.setForeground(White);
+            tf.setCaretColor(White);
+            tf.setFont(new Font("Segue UI", Font.PLAIN, 12));
             tf.setBorder(new CompoundBorder(
-                new LineBorder(ACCENT.darker(), 1, true),
+                new LineBorder(BlueishPurle.darker(), 1, true),
                 new EmptyBorder(4, 8, 4, 8)));
             return tf;
         }
 
         private JComboBox makeCombo(String[] options) {
             JComboBox cb = new JComboBox(options);
-            cb.setBackground(CARD);
-            cb.setForeground(TEXT);
-            cb.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            cb.setBackground(Navy);
+            cb.setForeground(White);
+            cb.setFont(new Font("Segue UI", Font.PLAIN, 12));
             return cb;
         }
 
         private JSpinner makeSpinner(int value, int min, int max) {
             JSpinner sp = new JSpinner(new SpinnerNumberModel(value, min, max, 1));
             sp.setPreferredSize(new Dimension(64, 30));
-            sp.setBackground(CARD);
-            sp.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            sp.setBackground(Navy);
+            sp.setFont(new Font("Segue UI", Font.PLAIN, 12));
             // Fix text visibility inside the spinner
             JComponent editor = sp.getEditor();
             if (editor instanceof JSpinner.DefaultEditor) {
                 JSpinner.DefaultEditor de = (JSpinner.DefaultEditor) editor;
-                de.getTextField().setBackground(CARD);
-                de.getTextField().setForeground(TEXT);
-                de.getTextField().setFont(new Font("Segoe UI", Font.PLAIN, 12));
-                de.getTextField().setCaretColor(TEXT);
+                de.getTextField().setBackground(Navy);
+                de.getTextField().setForeground(White);
+                de.getTextField().setFont(new Font("Segue UI", Font.PLAIN, 12));
+                de.getTextField().setCaretColor(White);
                 de.getTextField().setOpaque(true);
                 de.getTextField().setUI(new javax.swing.plaf.basic.BasicTextFieldUI());
-                de.getTextField().setBackground(CARD);
-                de.getTextField().setForeground(TEXT);
+                de.getTextField().setBackground(Navy);
+                de.getTextField().setForeground(White);
             }
-            sp.setBorder(new LineBorder(ACCENT.darker(), 1, true));
+            sp.setBorder(new LineBorder(BlueishPurle.darker(), 1, true));
             return sp;
         }
 
@@ -718,7 +710,7 @@ public class Dashboard extends JFrame {
             JButton b = new JButton(text);
             b.setFont(new Font("Segoe UI", Font.BOLD, 12));
             b.setBackground(bg);
-            b.setForeground(TEXT);
+            b.setForeground(White);
             b.setFocusPainted(false);
             b.setOpaque(true);
             b.setBorder(new EmptyBorder(7, 16, 7, 16));
@@ -729,7 +721,7 @@ public class Dashboard extends JFrame {
         private JLabel smallLabel(String text) {
             JLabel l = new JLabel(text);
             l.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-            l.setForeground(SUBTLE);
+            l.setForeground(Grey);
             return l;
         }
     }
