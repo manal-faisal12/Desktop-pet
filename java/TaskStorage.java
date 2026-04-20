@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class TaskStorage {
     // Since it's marked as Resource Root, we don't need "Resource/"
-    private static final String FILE_NAME = System.getProperty("user.dir") + "/Resource/Main_taskManager.resources/tasks.csv";
+    private static final String FILE_NAME = System.getProperty("user.dir") + "/Resource/Main_taskManager/resources/tasks.csv";
     //one place to store and change name of file
     //to make easier to read on csv file
     private static final String HEADER =
@@ -31,7 +31,7 @@ public class TaskStorage {
 
         }
         catch (Exception e) {
-            System.out.println("Error saving tasks: " + e.getMessage());
+            System.out.println("Error saving tasks: " + e.getMessage()); //?
         }
     }
 

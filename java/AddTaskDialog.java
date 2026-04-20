@@ -303,7 +303,6 @@ import java.time.LocalDateTime;
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            manager.addTask(result);
 
             // 2. TELL THE ALERT SERVICE TO RE-CHECK EVERYTHING RIGHT NOW
             // This updates 'latestTaskCount' so the Fox hears it
