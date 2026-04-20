@@ -301,7 +301,7 @@ public class Dashboard extends JFrame {
         AddTaskDialog dialog = new AddTaskDialog(this, manager);
         dialog.setVisible(true);
 
-        Task newTask = dialog.getResult();
+        Task newTask = dialog.getResult(); // if exits the panel and doesnot change the null of abstract class
         if (newTask != null) {
             manager.addTask(newTask);
             refresh();
