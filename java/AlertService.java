@@ -23,18 +23,13 @@ public class AlertService {
         public void checkAndAlert() {
             ArrayList<Task> alertTasks = manager.getAlertTasks();
             latestTaskCount = alertTasks.size();
-            if (alertTasks.size() == 0) return;
             int overdueCount = manager.countOverdue();
-
             if (overdueCount > 0 && FoxDesktopPet.currentFox != null && maxtimes<3) {
                 FoxDesktopPet.currentFox.friendshipManager.decrease(overdueCount * 0.2);//each task missed means less friendship/trust each time u open the fox without completing overdue tasks it will lose trust in u
                 FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxOverdue(overdueCount));
                 maxtimes++;
             }
-            if (FoxDesktopPet.currentFox != null) {//added by Minahil alerts that the task is almost overdue
-                FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxTaskAlert(alertTasks.size()));
-            }
-
+            if (alertTasks.size() == 0) return;
 
         // Build the message to show
         String message = "⏰  Tasks due within 1 day:\n\n";

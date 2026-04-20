@@ -16,8 +16,8 @@ import java.util.Properties;
 
 public class PrayerManager {
     private final String[] pNames = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
-    private final String[] pTimes = new String[5];
-    private final JCheckBox[] checkboxes = new JCheckBox[5];
+    public static String[] pTimes = new String[5];
+    public static JCheckBox[] checkboxes = new JCheckBox[5];
     private int checkedCount = 0;
     private final JFrame frame;
     private final JPanel panel;
@@ -33,10 +33,10 @@ public class PrayerManager {
 
     public PrayerManager() {
         // LOAD FONT
-        try {
-            bluewinter = Font.createFont(Font.TRUETYPE_FONT,
-                    new File("Resources- PP/bluewinter.ttf")).deriveFont(20f);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(bluewinter);
+       try {
+           InputStream bluewinterIS = getClass().getClassLoader().getResourceAsStream("Resources- PP/bluewinter.ttf");
+           bluewinter = Font.createFont(Font.TRUETYPE_FONT, bluewinterIS).deriveFont(20f);
+
         } catch (Exception ex) {
             bluewinter = new Font("Arial", Font.PLAIN, 20);
         }
@@ -104,6 +104,7 @@ public class PrayerManager {
                     props.setProperty(String.valueOf(index), "false");
                 }
                 scoreLabel.setText("Prayers today: " + checkedCount + " / 5");
+                PrayerManager.globalPrayedCount = checkedCount;
                 saveRecords();
             });
 
@@ -152,6 +153,7 @@ public class PrayerManager {
             System.out.println("No records file yet.");
         }
         isLoading = false;
+        PrayerManager.globalPrayedCount = checkedCount;
     }
 
     private void saveRecords() {
@@ -162,21 +164,26 @@ public class PrayerManager {
         }
     }
     private boolean resetDonetoday = false;
+    public static int globalPrayedCount = 0;
     // resets all checkboxes at midnight (new day commences)
     private void startMidnightReset() {
         Timer midnightChecker = new Timer(60000, e -> {
             LocalTime now = LocalTime.now();
+
+            // Reset the flag at 00:01 so tomorrow works
+            if (now.getHour() == 0 && now.getMinute() == 1) {
+                resetDonetoday = false;
+            }
+
             if (now.getHour() == 0 && now.getMinute() == 0 && !resetDonetoday) {
-                resetDonetoday=true;
-                int missed=5-getPrayerCount();
-                if(missed>0 && FoxDesktopPet.currentFox!=null){   //friendship will decrease according to the number of prayers missed
-                    FoxDesktopPet.currentFox.friendshipManager.decrease(missed*0.5);
-                    FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxPrayersMissed(missed));//invoking the specific dialogue for prayers missed
+                resetDonetoday = true;
+                int missed = 5 - getPrayerCount();
+                if (missed > 0 && FoxDesktopPet.currentFox != null) {
+                    FoxDesktopPet.currentFox.friendshipManager.decrease(missed * 0.5);
+                    FoxDesktopPet.currentFox.speak(new FoxDesktopPet.FoxPrayersMissed(missed));
+                    FoxDesktopPet.currentFox.prayerNagCount = 0;
                 }
-                resetChecklist(); // all prayers unchecked at midnight (for the new day)
-                if (now.getHour() == 0 && now.getMinute() == 1) {
-                    resetDonetoday = false; // ← reset flag for next day
-                }
+                resetChecklist();
             }
         });
         midnightChecker.start();
@@ -281,8 +288,8 @@ public class PrayerManager {
     // audio notification alert at specific prayer time
     private void playPrayerAlert() {
         try {
-            File soundFile = new File("Resources- PP/bell.wav");
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
+            URL alertURL = getClass().getResource("Resources- PP/bell.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(alertURL);
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
             clip.start();
