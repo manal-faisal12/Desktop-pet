@@ -271,15 +271,15 @@ import java.time.LocalDateTime;
                 return;
             }
 
-            String id = manager.generateId();
+            String id = manager.generateId(); //generates unique id to help in finding and deleting
 
-            //different
             // Task is null
             try {
                 if (type.equals("Assignment")) {
                     int marks = Integer.parseInt(marksF.getText().trim()); //marks is
                     String fmt = formatF.getText().trim();
                     result = new Assignment(id, title, subject, desc, diff, dueDate, marks, fmt);
+                    //creates a new task, so pointer no longer points to null
 
                 } else if (type.equals("Quiz")) {
                     int duration = Integer.parseInt(durationF.getText().trim());
@@ -310,9 +310,9 @@ import java.time.LocalDateTime;
             dispose(); // close the dialog
         }
 
-        // Returns the task that was created (or null if cancelled)
+        // Returns the task that was created (or null if canceled)
         public Task getResult() {
-            return result;
+            return result; //task object that checks if null
         }
 
         //building ui Components helper methods

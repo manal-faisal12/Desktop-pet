@@ -9,6 +9,10 @@ import java.util.ArrayList;
 public class TaskStorage {
     // Since it's marked as Resource Root, we don't need "Resource/"
     private static final String FILE_NAME = getFilePath();
+    //one place to store and change name of file
+    //to make easier to read on csv file
+    private static final String HEADER =
+            "id,taskType,title,subject,description,difficulty," + "submissionDate,completed,createdAt,extra1,extra2";
 
     private static String getFilePath() {
         String path1 = System.getProperty("user.dir") + "/Resource/Main_taskManager.resources/tasks.csv";
@@ -17,10 +21,7 @@ public class TaskStorage {
         if (new java.io.File(path1).exists()) return path1;
         return path2;
     }
-    //one place to store and change name of file
-    //to make easier to read on csv file
-    private static final String HEADER =
-            "id,taskType,title,subject,description,difficulty," + "submissionDate,completed,createdAt,extra1,extra2";
+
     public static void saveTasks(ArrayList<Task> tasks) {
         try {
             FileWriter   fw = new FileWriter(FILE_NAME);
@@ -39,7 +40,7 @@ public class TaskStorage {
 
         }
         catch (Exception e) {
-            System.out.println("Error saving tasks: " + e.getMessage()); //?
+            System.out.println("Error saving tasks: " + e.getMessage());
         }
     }
 
@@ -134,7 +135,6 @@ public class TaskStorage {
                     + quote(t.getCreatedAt().format(Task.SAVE_FORMAT))     + ","
                     + quote(extra1)                                        + ","
                     + quote(extra2);
-//have to fix this
         return line;
     }
     //this above converts task to line 
