@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
         // for lab report
         private JTextField labNum, experiment;
 
-        //for add new task
+        //for add new task, constructor
         public AddTaskDialog(Frame owner, TaskManager manager) {
             super(owner, "Add New Task", true);
             //model makes sure that can go nowhere without entering data
