@@ -4,14 +4,14 @@ import java.awt.*;
 
 public class StatsPanel extends JPanel {
 
-    private static final Color BG      = new Color(0x1A1A2E);
-    private static final Color ACCENT  = new Color(0x7C3AED);
-    private static final Color ACCENT2 = new Color(0xE040FB);
-    private static final Color TEXT    = new Color(0xF0F0FF);
-    private static final Color SUBTLE  = new Color(0x8888AA);
-    private static final Color SUCCESS = new Color(0x00C897);
-    private static final Color WARNING = new Color(0xF5A623);
-    private static final Color DANGER  = new Color(0xFF4D6D);
+    private static final Color DarkBlue = new Color(0x1A1A2E);
+    private static final Color PurpleishBlue = new Color(0x7C3AED);
+    private static final Color Purple = new Color(0xE040FB);
+    private static final Color White = new Color(0xF0F0FF);
+    private static final Color Grey = new Color(0x8888AA);
+    private static final Color Mint = new Color(0x00C897);
+    private static final Color Orange = new Color(0xF5A623);
+    private static final Color LightRed = new Color(0xFF4D6D);
 
     // Labels we will update when tasks change
     private JLabel totalL;
@@ -23,15 +23,15 @@ public class StatsPanel extends JPanel {
 
     public StatsPanel() {
         setLayout(new BorderLayout(0, 8));
-        setBackground(BG);
+        setBackground(DarkBlue);
         setBorder(new CompoundBorder(
-            new LineBorder(ACCENT.darker(), 1, true),
+            new LineBorder(PurpleishBlue.darker(), 1, true),
             new EmptyBorder(12, 16, 12, 16)));
 
         // Section title
         JLabel heading = new JLabel("Progress Overview");
-        heading.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        heading.setForeground(ACCENT2);
+        heading.setFont(new Font("Segue UI", Font.BOLD, 14));
+        heading.setForeground(Purple);
         add(heading, BorderLayout.NORTH);
 
         // Four stat boxes side by side
@@ -39,15 +39,15 @@ public class StatsPanel extends JPanel {
         boxes.setOpaque(false);
         boxes.setBorder(new EmptyBorder(8, 0, 8, 0));
 
-        totalL = makeStatLabel("0", ACCENT);
-        doneL = makeStatLabel("0", SUCCESS);
-        pendingL = makeStatLabel("0", WARNING);
-        overdueL = makeStatLabel("0", DANGER);
+        totalL = makeStatLabel("0", PurpleishBlue);
+        doneL = makeStatLabel("0", Mint);
+        pendingL = makeStatLabel("0", Orange);
+        overdueL = makeStatLabel("0", LightRed);
 
-        boxes.add(wrapBox("Total",     totalL,   ACCENT));
-        boxes.add(wrapBox("Completed", doneL,    SUCCESS));
-        boxes.add(wrapBox("Pending",   pendingL, WARNING));
-        boxes.add(wrapBox("Overdue",   overdueL, DANGER));
+        boxes.add(wrapBox("Total",     totalL, PurpleishBlue));
+        boxes.add(wrapBox("Completed", doneL, Mint));
+        boxes.add(wrapBox("Pending",   pendingL, Orange));
+        boxes.add(wrapBox("Overdue",   overdueL, LightRed));
         add(boxes, BorderLayout.CENTER);
 
         // Progress bar row
@@ -57,13 +57,13 @@ public class StatsPanel extends JPanel {
         progressB = new JProgressBar(0, 100);
         progressB.setValue(0);
         progressB.setBackground(new Color(0x2D2D4A));
-        progressB.setForeground(SUCCESS);
+        progressB.setForeground(Mint);
         progressB.setPreferredSize(new Dimension(0, 12));
-        progressB.setBorder(new LineBorder(ACCENT.darker(), 1, true));
+        progressB.setBorder(new LineBorder(PurpleishBlue.darker(), 1, true));
 
         percentL = new JLabel("0%");
-        percentL.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        percentL.setForeground(SUCCESS);
+        percentL.setFont(new Font("Segue UI", Font.BOLD, 12));
+        percentL.setForeground(Mint);
         percentL.setPreferredSize(new Dimension(36, 14));
 
         barRow.add(progressB, BorderLayout.CENTER);
@@ -86,11 +86,11 @@ public class StatsPanel extends JPanel {
         percentL.setText(percent + "%");
 
         if (percent >= 75) {
-            progressB.setForeground(SUCCESS);
+            progressB.setForeground(Mint);
         } else if (percent >= 40) {
-            progressB.setForeground(WARNING);
+            progressB.setForeground(Orange);
         } else {
-            progressB.setForeground(DANGER);
+            progressB.setForeground(LightRed);
         }
     }
 
@@ -98,7 +98,7 @@ public class StatsPanel extends JPanel {
 
     private JLabel makeStatLabel(String value, Color color) {
         JLabel lb = new JLabel(value, SwingConstants.CENTER);
-        lb.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lb.setFont(new Font("Segue UI", Font.BOLD, 26));
         lb.setForeground(color);
         return lb;
     }
@@ -111,7 +111,7 @@ public class StatsPanel extends JPanel {
             new EmptyBorder(6, 10, 6, 10)));
 
         JLabel nameLb = new JLabel(name, SwingConstants.CENTER);
-        nameLb.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        nameLb.setFont(new Font("Segue UI", Font.PLAIN, 10));
         nameLb.setForeground(color.brighter());
 
         p.add(valueLabel, BorderLayout.CENTER);

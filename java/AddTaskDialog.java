@@ -148,7 +148,9 @@ import java.time.LocalDateTime;
             });
 
             addBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) { onAdd(); }
+                public void actionPerformed(ActionEvent e) {
+                    onAdd();
+                }
             });
 
             footer.add(cancelBtn);

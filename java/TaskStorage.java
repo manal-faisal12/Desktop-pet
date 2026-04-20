@@ -197,7 +197,7 @@ public class TaskStorage {
         }
     }
 
-    // This prevents commas inside a value from breaking the CSV format
+    // If something is left blank then it will replace it with a " " instead of leaving blank 
     private static String quote(String value) {
         if (value == null)
             value = ""; //changes space to ""

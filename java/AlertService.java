@@ -1,12 +1,6 @@
 import javax.swing.*;
 import java.util.ArrayList;
-
-/*
-   AlertService.java
-   -----------------
-   Checks if any tasks are due within 1 day and not yet completed.
-   If there are any, it shows a popup message to the user.
-*/
+//due within 1 day, and not yet completed, sends prompt
 
 public class AlertService {
 

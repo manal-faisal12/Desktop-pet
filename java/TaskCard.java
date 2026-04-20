@@ -106,10 +106,10 @@ public class TaskCard extends JPanel {
             if (description.length() > 70)
                 description = description.substring(0, 67) + "..."; //only get the first 70 characters
             //replace the rest with ... so total length will be 70+3
-            JLabel Descr_Label = new JLabel(description);
-            Descr_Label.setFont(new Font("Segue UI", Font.ITALIC, 11));
-            Descr_Label.setForeground(Lilac);//subtle is the color purple
-            centre.add(Descr_Label);
+            JLabel Desc_Label = new JLabel(description);
+            Desc_Label.setFont(new Font("Segue UI", Font.ITALIC, 11));
+            Desc_Label.setForeground(Lilac);//subtle is the color purple
+            centre.add(Desc_Label);
             centre.add(Box.createVerticalStrut(4));//forces certain spaces (4) between 2 components
         }
 
@@ -141,9 +141,11 @@ public class TaskCard extends JPanel {
         deleteBtn.setFocusPainted(false);
         deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         deleteBtn.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseEntered(MouseEvent e) {
                 deleteBtn.setForeground(Pink);
             }
+            @Override
             public void mouseExited(MouseEvent e)  {
                 deleteBtn.setForeground(Lilac);
             }
@@ -182,15 +184,21 @@ public class TaskCard extends JPanel {
     }
 
     private Color Status_Color() {
-        if (task.getCompleted())  return Mint;
-        if (task.isOverdue())    return Pink;
-        if (task.isDueSoon(1))   return Orange;
+        if (task.getCompleted())
+            return Mint;
+        if (task.isOverdue())
+            return Pink;
+        if (task.isDueSoon(1))
+            return Orange;
         return Mint;
     }
 
     private Color Difficulty_Color() {
-        if (task.getDifficulty().equals("Easy"))   return Mint;
-        if (task.getDifficulty().equals("Hard"))   return Pink;
+        if (task.getDifficulty().equals("Easy"))
+            return Mint;
+        if (task.getDifficulty().equals("Hard"))
+            return Pink;
+
         return Orange; // Medium
     }
 
