@@ -1,4 +1,3 @@
-// prayer manaher
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -9,10 +8,14 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalTime;
+import java.time.LocalDate; // ADDED IMPORT
 import java.time.format.DateTimeFormatter;
 import javax.swing.Timer;
 import java.util.prefs.Preferences;
 import java.util.Properties;
+import java.awt.font.TextAttribute;
+import java.util.Map;
+import java.util.HashMap;
 
 public class PrayerManager {
     private final String[] pNames = {"Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"};
@@ -31,11 +34,13 @@ public class PrayerManager {
     Properties props = new Properties();
     String prayerRecordsFile = "config.properties";
 
+    private static final String LAST_RESET_DATE_KEY = "lastResetDate"; // ADDED
+
     public PrayerManager() {
         // LOAD FONT
-       try {
-           InputStream bluewinterIS = getClass().getClassLoader().getResourceAsStream("Resources- PP/bluewinter.ttf");
-           bluewinter = Font.createFont(Font.TRUETYPE_FONT, bluewinterIS).deriveFont(20f);
+        try {
+            InputStream bluewinterIS = getClass().getClassLoader().getResourceAsStream("Resources- PP/bluewinter.ttf");
+            bluewinter = Font.createFont(Font.TRUETYPE_FONT, bluewinterIS).deriveFont(20f);
 
         } catch (Exception ex) {
             bluewinter = new Font("Arial", Font.PLAIN, 20);
@@ -93,21 +98,31 @@ public class PrayerManager {
             checkboxes[i].setBackground(new Color(245, 235, 255));
             checkboxes[i].setForeground(new Color(100, 60, 140));
             checkboxes[i].addItemListener(e -> {
-                if (isLoading) return; //  ignore during loading
+                if (isLoading) return; // ignore during loading
+
+                // Create the strikethrough font attributes
+                Map<TextAttribute, Object> attributes = new HashMap<>();
+                attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+                Font strikeThroughFont = bluewinter.deriveFont(attributes).deriveFont(22f);
+                Font regularFont = bluewinter.deriveFont(22f);
+
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     checkedCount++;
-                    nameLabel[index].setText("<html><strike>" + pNames[index] + "</strike></html>");
+                    // Remove HTML tags, just use the normal text and apply the strikethrough font
+                    nameLabel[index].setText(pNames[index]);
+                    nameLabel[index].setFont(strikeThroughFont);
                     props.setProperty(String.valueOf(index), "true");
                 } else {
                     checkedCount--;
+                    // Revert to normal text and normal font
                     nameLabel[index].setText(pNames[index]);
+                    nameLabel[index].setFont(regularFont);
                     props.setProperty(String.valueOf(index), "false");
                 }
                 scoreLabel.setText("Prayers today: " + checkedCount + " / 5");
                 PrayerManager.globalPrayedCount = checkedCount;
                 saveRecords();
             });
-
             row.add(nameLabel[i]);
             row.add(times[i]);
             row.add(checkboxes[i]);
@@ -119,6 +134,7 @@ public class PrayerManager {
         panel.add(scoreLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
+        resetIfNewDay(); // ADDED - Check and reset if it's a new day
         checkRecords();
         scoreLabel.setText("Prayers today: " + checkedCount + " / 5");
 
@@ -146,7 +162,12 @@ public class PrayerManager {
                 checkboxes[i].setSelected(wasPrayed);
                 if (wasPrayed) {
                     checkedCount++;
-                    nameLabel[i].setText("<html><strike>" + pNames[i] + "</strike></html>");
+
+                    Map<TextAttribute, Object> attributes = new HashMap<>();
+                    attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+
+                    nameLabel[i].setText(pNames[i]);
+                    nameLabel[i].setFont(bluewinter.deriveFont(attributes).deriveFont(22f));
                 }
             }
         } catch (IOException e) {
@@ -163,6 +184,26 @@ public class PrayerManager {
             System.out.println("Could not save records: " + e.getMessage());
         }
     }
+
+    // ADDED METHOD: Reset checklist if the stored date is not today
+    private void resetIfNewDay() {
+        LocalDate today = LocalDate.now();
+        String lastReset = prefs.get(LAST_RESET_DATE_KEY, "");
+        if (!lastReset.equals(today.toString())) {
+            isLoading = true;
+            for (int i = 0; i < pNames.length; i++) {
+                checkboxes[i].setSelected(false);
+                nameLabel[i].setText(pNames[i]);
+                nameLabel[i].setFont(bluewinter.deriveFont(22f));
+                props.setProperty(String.valueOf(i), "false");
+            }
+            checkedCount = 0;
+            saveRecords();
+            isLoading = false;
+            prefs.put(LAST_RESET_DATE_KEY, today.toString());
+        }
+    }
+
     private boolean resetDonetoday = false;
     public static int globalPrayedCount = 0;
     // resets all checkboxes at midnight (new day commences)
@@ -184,6 +225,7 @@ public class PrayerManager {
                     FoxDesktopPet.currentFox.prayerReminderCount = 0;
                 }
                 resetChecklist();
+                prefs.put(LAST_RESET_DATE_KEY, LocalDate.now().toString()); // ADDED
             }
         });
         midnightChecker.start();
@@ -202,16 +244,6 @@ public class PrayerManager {
             saveRecords();
         });
     }
-    /* TO RETAIN MEMORY OF PRAYED PRAYERS using Properties
-    // storing checked prayer in properties
-        public void addCheck (String name) {
-        props.setProperty(name, String.valueOf(true));
-        }
-    // unchecking a prayer in properties
-        public void removeCheck (String name) {
-        props.setProperty(name, String.valueOf(false));
-        } */
-
 
     // for the fox to evaluate you
     public int getPrayerCount() {
@@ -273,6 +305,7 @@ public class PrayerManager {
                     .format(DateTimeFormatter.ofPattern("HH:mm"));
             for (int i = 0; i < pNames.length; i++) {
                 if (pTimes[i] != null && pTimes[i].trim().equals(currentTime) && !currentTime.equals(lastPlayedTime)) {
+                    lastPlayedTime = currentTime;
                     final String prayerName = pNames[i];
                     playPrayerAlert();
                     SwingUtilities.invokeLater(() ->
