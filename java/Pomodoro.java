@@ -7,14 +7,17 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.InputStream;// added these to assist in locating the resources successfully
 import java.net.URL;
+
+import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
+
 public class Pomodoro extends JFrame {
     public boolean isbreak;//so that the fox can view this
     private CardLayout cardLayout = new CardLayout(); // used to switch b/w 2 panels
     private JPanel container = new JPanel(cardLayout);  // holds the cards
     private PomodoroPanel pomodoroPanel;
     private boolean isFullscreen = false;
+// -----------------------------------------------------------------------
 
-    // ───────────────────────────────────────────────────────────────────────────
     public Pomodoro() {
         setTitle("FOCUS MANAGER");
         setSize(700, 650);
@@ -26,9 +29,11 @@ public class Pomodoro extends JFrame {
             URL imgURL = getClass().getClassLoader().getResource("Resources- PP/strawberry.png");
             ImageIcon img = new ImageIcon(imgURL);
             setIconImage(img.getImage());
+
         } catch (Exception e) {
             System.out.println("Icon could not be loaded: " + e.getMessage());
         }
+
 
         // panels
         this.pomodoroPanel = new PomodoroPanel(this);
@@ -432,6 +437,12 @@ class AmbientPanel extends JPanel {
         backBtn.addActionListener(e -> mainFrame.switchPanel("POMODORO"));
         navBar.add(backBtn);
 
+        mainFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                stopSound();
+            }
+        });
         // Content
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
