@@ -18,7 +18,8 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 4.Each of these features will constitute to the changes in Berry's friendship.Beware, if the friendship is completely depleted, the fox may die out of neglect.<br>
 5.Berry will have a variety of dialogues that will not only remind you of any overdue task or a prayer but will also support you during your pomodoro cycles.<br>
 6.You can also pick Berry up by double-clicking on it and move it to your desired place on your screen.<br>
-7.Rest of the functionalities are explained in detailed below:<br>
+7.If you wish to close FoxBerry, you can simply send it to home!
+8.Rest of the functionalities are explained in detailed below:<br>
 # <br> Fox Journal:<br>
 1.Fox journal will allow the user to vent to the fox about their daily lives.It has a detailed prompt to make sure no one miuses it.<br>
 2.For it to properly work,you must open the foxjournal.java file and write your own api key in the designated place from the website mentioned in the comments.<br>
