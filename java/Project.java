@@ -30,8 +30,10 @@ public class Project extends Task { //extends the abstract class
     public String getExtraInfo() {
         return "Team Size: " + teamSize + "  |  Presentation: " + presentationRequired;
     }
-
-    // ── Getters & Setters ─────────────────────────────────────────────────────
-    public int    getTeamSize()             { return teamSize; }
-    public String getPresentationRequired() { return presentationRequired; }
+    public int    getTeamSize()             {
+        return teamSize;
+    }
+    public String getPresentationRequired() {
+        return presentationRequired;
+    }
 }

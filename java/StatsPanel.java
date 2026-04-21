@@ -94,7 +94,7 @@ public class StatsPanel extends JPanel {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    //helper methods to create UI
 
     private JLabel makeStatLabel(String value, Color color) {
         JLabel lb = new JLabel(value, SwingConstants.CENTER);
