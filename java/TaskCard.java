@@ -3,14 +3,6 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-/*
-    Shows completion checkbox
-
-   One card panel displayed in the task list for each task.
-   Shows the task's icon, title, subject, due date, status,
-   a completion checkbox, and a delete button.
-*/
-
 public class TaskCard extends JPanel {
 
     private final Color Blue_Dark  = new Color(0x1A1A2E);
@@ -63,8 +55,6 @@ public class TaskCard extends JPanel {
         left.add(checkBox);
         left.add(Box.createVerticalGlue()); //creates vertical glue component
         add(left, BorderLayout.WEST);
-
-        // ── Centre: task info ─────────────────────────────────────────────────
         JPanel centre = new JPanel();
         centre.setLayout(new BoxLayout(centre, BoxLayout.Y_AXIS));
         centre.setOpaque(false);

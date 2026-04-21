@@ -2,3 +2,5 @@ id,taskType,title,subject,description,difficulty,submissionDate,completed,create
 "T1775041714162","Quiz","Change title","CALD","","Easy","2026-04-04T16:08","true","2026-04-01T16:08","0",""
 "T1775054354500","Assignment","essay ","english","","Medium","2026-06-01T19:38","false","2026-04-01T19:39","0",""
 "T1776668921687","Project","FoxBerry","OOP","Presentation and report","Easy","2026-04-24T12:07","false","2026-04-20T12:08","0",""
+"T1776761543166","Assignment","Matrix","Linear Algebra","Doing question 5 6 and 7 from the book","Easy","2026-04-24T13:51","false","2026-04-21T13:52","0",""
+"T1776761621738","Assignment","Matrix and Determinants Explaination","Linear Algebra and Ordinary Differential Equations","Creating and then solving 10 questions from the book","Easy","2026-04-24T13:52","false","2026-04-21T13:53","0",""

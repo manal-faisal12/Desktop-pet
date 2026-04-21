@@ -137,7 +137,7 @@ public class Dashboard extends JFrame {
         String[] filters = {"All", "Assignment", "Quiz", "Project", "Lab Report", "Completed", "Overdue"};
         ButtonGroup group = new ButtonGroup();
 
-        for (final String filter : filters) {
+        for (String filter : filters) {
             JToggleButton btn = new JToggleButton(filter);
             btn.setFont(new Font("Segue UI", Font.BOLD, 11));
             btn.setForeground(White);
@@ -223,6 +223,7 @@ public class Dashboard extends JFrame {
     public void refresh() {
         TaskListBox.removeAll();//part of awt that removes all components from container
         ArrayList<Task> New_Array;  //creates arraylist
+        //used when adding task
 
         if (ActiveFilter.equals("All")) {
             New_Array = manager.getTasks();
@@ -250,7 +251,7 @@ public class Dashboard extends JFrame {
 
         } else {
             // Add one TaskCard for each task
-            for (final Task t : New_Array) {
+            for (Task t : New_Array) {
                 //everytime onClick is called run this instruction
                 // Runnable is like a simple action it tells the card what to do when clicked/deleted
 
