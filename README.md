@@ -27,7 +27,7 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 3.Simply click on the bottom and start talking to Berry .<br>
 > Keep in mind that this chatbot has a message limit of about 200 per day.<br>
   It is relatively slow as compared to our usual ais.<br>
-  It will take some time to reply.<br>
+  You can message one at a time(will have some delay before your next message).<br>
   
 
 
