@@ -502,22 +502,25 @@ public class FoxDesktopPet extends JFrame {
                 }
             }
         }).start();
-        new Timer(30000, e -> { //use the prayer manager to track the prayers missed in the fox
+        new Timer(20000, e -> {
             if (!friendshipManager.isDead() && prayerReminderCount < 2) {
+                int missed = 0;
+                LocalTime now = LocalTime.now();
+                // rough prayer times as fallback when Prayer Manager not open
+                int[] prayerHours = {4, 12, 15, 18, 20};
                 try {
                     Properties props = new Properties();
-                    props.load(new FileInputStream("config.properties"));
-                    int missed = 0;
+                    props.load(new FileInputStream("config.properties")); //the fox will peak in the prayer manager's checklist file to see which prayer is marked and which is not
                     for (int i = 0; i < 5; i++) {
                         boolean prayed = Boolean.parseBoolean(props.getProperty(String.valueOf(i), "false"));
-                        if (!prayed) missed++;
-                    }
-                    if (missed > 0) {
-                        speak(new FoxPrayersMissed(missed));
-                        prayerReminderCount++;
+                        if (!prayed && now.getHour() >= prayerHours[i]) missed++;
                     }
                 } catch (IOException ex) {
-                    // config.properties doesn't exist yet, skip
+                    // skip
+                }
+                if (missed > 0) {
+                    speak(new FoxPrayersMissed(missed));
+                    prayerReminderCount++;
                 }
             }
         }).start();
@@ -727,7 +730,9 @@ public class FoxDesktopPet extends JFrame {
     }
 
     public class BatterySpeech implements FoxSpeech {
-        private String[] lines = {"I am feeling quite sleepy....", "I need some rest.", "Let me sleep Hooman", "BERRY WANTS TO SLEEP"};
+        private String[] lines = {"I am feeling quite sleepy....",
+                "I need some rest.", "Let me sleep Hooman",
+                "BERRY WANTS TO SLEEP"};
         private Random object = new Random();
 
         public String getDialogue() {
@@ -746,7 +751,8 @@ public class FoxDesktopPet extends JFrame {
                 "Stretch those legs!",
                 "You did great.",
                 "Ready for another session?",
-                "You earned your treat."
+                "You earned your treat.",
+                "Little paws,big dreams."
         };
         int index = object.nextInt(breakLines.length);
 
@@ -761,9 +767,12 @@ public class FoxDesktopPet extends JFrame {
                         "Keep working hard!",
                         "You  have got this.",
                         "FOCUS HOOMAN.",
+                        "Hocus pocus,please focus.",
                         "Just a bit more.",
                         "No distractions Hooman.",
-                        "Tick Tock."
+                        "Tick Tock.",
+                        "Don't give up.",
+                        "I believe in you."
                 };
                 public String getDialogue(){
                     return  focusLines[object.nextInt(focusLines.length)];
@@ -826,7 +835,8 @@ public class FoxDesktopPet extends JFrame {
         private String[] prayerlines = {
                 "%d prayers missed.",
                 "Be careful next time!",
-                "You can do better."
+                "You still have time."
+
         };
 
 
@@ -837,7 +847,23 @@ public class FoxDesktopPet extends JFrame {
     }
 
     public class RandomSpeech implements FoxSpeech {
-        private String[] lines = {"I like my new home.", "I am feeling bored.", "Pets please!", "You are a great person", "Berry misses you", "Did you forget\n about me?", "Berry well done!", "Fun Fact:Foxes\ncan whistle.", "I am hungry."};
+        private String[] lines = {"I like my new home.",
+                "I am feeling bored.",
+                "Pets please!",
+                "You are a great person",
+                "Berry misses you",
+                "Did you forget about me?"
+                ,"Berry well done!",
+                "Fun Fact:Foxes can whistle.",
+                "I am hungry.",
+                "Cute.exe is working fine.",
+                "Just foxing around.",
+                "Don't mind me.",
+                "That corner looks interesting.",
+                "Desktop explorer.",
+                "Just stretching my paws.",
+                "Next stop"
+                       };
         private Random object = new Random();
 
         public String getDialogue() {
