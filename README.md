@@ -12,7 +12,7 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 &nbsp;&nbsp; a) By left-clicking on the fox,You will have different buttons to interact with the fox including feed,stay command and sending it to home.<br>
 <img width="227" height="197" alt="Image" src="https://github.com/user-attachments/assets/4c7decfa-0894-4170-87f9-8c769a8284e7" /><br>
 &nbsp;&nbsp; b) By right-clicking on the fox,you will have four more functions of the fox that are:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;  - Pomodoro Timer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;  -  Pomodoro Timer<br>
 &nbsp;&nbsp;&nbsp;&nbsp;  - Fox Journal<br>
 &nbsp;&nbsp;&nbsp;&nbsp;  - Task Manager<br>
 &nbsp;&nbsp;&nbsp;&nbsp;  - Prayer Manager<br>
@@ -20,9 +20,9 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 4.Each of these features will constitute to the changes in Berry's friendship.Beware, if the friendship is completely depleted, the fox may die out of neglect.<br>
 5.Berry will have a variety of dialogues that will not only remind you of any overdue task or a prayer but will also support you during your pomodoro cycles.<br>
 6.You can also pick Berry up by double-clicking on it and move it to your desired place on your screen.<br>
-7.If you wish to close FoxBerry, you can simply send it to home!
+7.If you wish to close FoxBerry, you can simply send it to home!<br>
 8.Rest of the functionalities are explained in detailed below:<br>
-# <br> Fox Journal:<br>
+## <br> Fox Journal:<br>
 1.Fox journal will allow the user to vent to the fox about their daily lives.It has a detailed prompt to make sure no one miuses it.<br>
 2.For it to properly work,you must open the foxjournal.java file and write your own api key in the designated place from the website mentioned in the comments.<br>
 <img width="328" height="436" alt="Image" src="https://github.com/user-attachments/assets/f0f6fe3b-bdbc-40d0-beb1-3e405cc7a3dd" /><br>
@@ -30,7 +30,7 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 > Keep in mind that this chatbot has a message limit of about 200 per day.<br>
   It is relatively slow as compared to our usual ais.<br>
   You can message one at a time(will have some delay before your next message).<br>
-  ## Pomodoro
+  ## Pomodoro:
 The Pomodoro technique is a research-backed, widely used work method. Many students worldwide use it for focused study sessions. Navigation bar:
 - Button to switch between the cards.
 - Fullscreen mode (and back) button. <br>
@@ -56,7 +56,7 @@ We’ve featured an Audio Player, with pre-saved ambience sounds. This is to enh
 **The Display**
 <img width="960" height="507" alt="Screenshot 2026-04-26 112557" src="https://github.com/user-attachments/assets/6da5e413-eee0-4d5e-b3cc-843d7d8caca1" />
 
-## Prayer Manager
+## Prayer Manager:
 A checklist to keep track of your prayers, and a pet fox to evaluate you on that sounds helpful? This program does just that!
 The program asks you for your country and city the first time you open it, and it displays the prayer times for 5 daily prayers for that particular location, on that specific date.
 
