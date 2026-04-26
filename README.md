@@ -62,33 +62,79 @@ The program asks you for your country and city the first time you open it, and i
 
 **The Display**
 <img width="340" height="500" alt="Screenshot 2026-04-26 121718" src="https://github.com/user-attachments/assets/11360dc0-ce13-4cf6-8bbf-7a462492bfdf" />
+<br>
+
+## Task Manager
 
 <br>
- ## Task Manager:<br>
+
 The Task Manager is a single program where you can compile all your tasks and keep on top of them. There are 4 main task types that the program allows:
-- Assignment
-- Quiz
-- Lab Report
-- Project <br>
-The program allows you to set the time and date for the submission and will remind you when there is one day left and you have still not completed the task.<br>
-//image 
-You can add a task by clicking the '+' button at the right bottom corner.<br>
-To make record keeping easier, you can also filter your task selection by clicking the desired filter in the central tab. <br>
-The program also allows you to check your progress by including a visual bar, including a statistical overview of your pending tasks as well as completed and overdue tasks.<br>
 
-Each task has specific features unique to it such as:
--Project: Team Size and Presentation required
--Quiz: Duration and Type
--Lab Report: Lab Number and Experiment
--Assignment: Total Marks and Submission Format
 <br>
-When a task has passed the deadline set for it, the task label will turn red, going in contrast with the previous green. If the task is approaching the deadline, it will turn orange.<br>
-The Manager also displays a clock in the upper right corner to allow you to stay on-top of your deadlines. 
 
+- **Assignment**
+- **Quiz**
+- **Lab Report**
+- **Project** <br>
 
+The program allows you to set the time and date for the submission and will remind you when there is one day left and you have still not completed the task.
 
+<br>
 
- 
+<img width="340" height="255" alt="Task Entry Screenshot" src="https://github.com/user-attachments/assets/364cfc0d-2d14-4be3-aed0-214dc79e90a0" />
+
+<br>
+
+You can add a task by clicking the '+' button at the right bottom corner. To avoid making submission date errors, the program doesnot allow you to set the date before the actual time e.g. if it is 10:00 of April 12th, the program will only allow you to set the time after 10:00. <br> 
+To make record keeping easier, you can also filter your task selection by clicking the desired filter in the central tab. 
+
+<br>
+
+<img width="799" height="53" alt="Filter Screenshot" src="https://github.com/user-attachments/assets/10f859bb-102f-46a1-bbac-a946b0ef4532" />
+
+<br>
+
+The program also allows you to check your progress by including a visual bar, including a statistical overview of your pending tasks as well as completed and overdue tasks. The percentage bar at the bottom shows exactly how many tasks are pending with respect to how many you currently have.
+
+<br>
+
+<img width="1230" height="230" alt="Progress Bar Screenshot" src="https://github.com/user-attachments/assets/2ede057f-8fe8-4b55-aae2-12da83678e81" />
+
+<br>
+
+### Task Specific Features
+
+<br>
+
+Each task has specific features unique to it:
+- **Project:** Team Size and Presentation required
+- **Quiz:** Duration and Type
+- **Lab Report:** Lab Number and Experiment
+- **Assignment:** Total Marks and Submission Format
+
+<br>
+
+When you add a new task, the program will change the fields requirement depending on the specific task.
+
+<br>
+<br>
+
+To set the task completed, just click the opaque box to the left of the task. The title will strike through and the label will turn a darker blue. To set it back to incompleted/pending just click the box again.
+<br>
+When a task has passed the deadline set for it, the task label will turn red. If the task is completed it will show up dark blue with the title of the text striked through.
+
+<br>
+
+<img width="1149" height="409" alt="Status Overview Screenshot" src="https://github.com/user-attachments/assets/80a0e4e3-2ea9-484c-add3-14977fda5df7" />
+
+<br>
+The description and attributes of the task can be seen to the right of the name of the task, with things like 'Difficulty' which allows you to correctly judge the amount of time it will take to complete your task. It proves to be beneficial when making a schedule to follow.
+<br>
+
+<br>
+
+The Manager also displays a clock in the upper right corner to allow you to stay on-top of your deadlines. <br>
+To delete the task, all you have to do is click the 'x' on the right of the specific task.
 
 
 
