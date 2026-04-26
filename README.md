@@ -30,7 +30,39 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
 > Keep in mind that this chatbot has a message limit of about 200 per day.<br>
   It is relatively slow as compared to our usual ais.<br>
   You can message one at a time(will have some delay before your next message).<br>
-  
+  ## Pomodoro
+The Pomodoro technique is a research-backed, widely used work method. Many students worldwide use it for focused study sessions. Navigation bar:
+- Button to switch between the cards.
+- Fullscreen mode (and back) button. <br>
+
+ Different buttons are placed on the main layout: <img width="1171" height="241" alt="Screenshot 2026-04-19 230745" src="https://github.com/user-attachments/assets/7db4dbe2-deb0-4cd6-953e-62d7791fb358" />
+**Focus:** Shifts to specific timer mode, “Focus Mode”, which is implemented in cycles, depending on your choice. 
+
+ **Start:**  Starts a regular timer (25 minutes, then 5-minute break) 
+
+ **Restart:** The countdown timer is brought back to 25:00 
+
+ **The Display**
+ <img width="960" height="503" alt="Screenshot 2026-04-26 112515" src="https://github.com/user-attachments/assets/f57fe0bb-c86b-4a1a-a751-00aabda74832" />
+
+ ## Ambient Audio Player
+We’ve featured an Audio Player, with pre-saved ambience sounds. This is to enhance focus by draining out environment noise. If you’d like, you also have the freedom to upload a custom track (in .wav form).
+
+**Features:**
+- Play pre-saved ambience sounds
+- Add your own track option (has to be converted to .wav form first).
+- Volume adjusting slider
+
+**The Display**
+<img width="960" height="507" alt="Screenshot 2026-04-26 112557" src="https://github.com/user-attachments/assets/6da5e413-eee0-4d5e-b3cc-843d7d8caca1" />
+
+## Prayer Manager
+A checklist to keep track of your prayers, and a pet fox to evaluate you on that sounds helpful? This program does just that!
+The program asks you for your country and city the first time you open it, and it displays the prayer times for 5 daily prayers for that particular location, on that specific date.
+
+**The Display**
+<img width="340" height="500" alt="Screenshot 2026-04-26 121718" src="https://github.com/user-attachments/assets/11360dc0-ce13-4cf6-8bbf-7a462492bfdf" />
+
 
 
 
