@@ -1,5 +1,5 @@
 # FoxBerry
-Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to optimize student productivity and focus levels using various approaches; reminders, Pomodoro timer, apps blocklist, to-do lists, assignment manager etc. Today, lack of focus and short attention spans are major barriers to effective learning. These very features will transform a static tool to an empathetic companion that ensures the user's emotional well-being and encourages healthy study habits.<br>
+Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to optimize student productivity and focus levels using various approaches; reminders, Pomodoro timer, assignment manager etc. Today, lack of focus and short attention spans are major barriers to effective learning. These very features will transform a static tool to an empathetic companion that ensures the user's emotional well-being and encourages healthy study habits.<br>
 # <br>Technical Requirements:<br>
  Compiler: Intellij IDEA<br>
  Nemotron Api Key
