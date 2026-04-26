@@ -63,6 +63,28 @@ The program asks you for your country and city the first time you open it, and i
 **The Display**
 <img width="340" height="500" alt="Screenshot 2026-04-26 121718" src="https://github.com/user-attachments/assets/11360dc0-ce13-4cf6-8bbf-7a462492bfdf" />
 
+<br>
+ ## Task Manager:
+The Task Manager is a single program where you can compile all your tasks and keep on top of them. There are 4 main task types that the program allows:
+- Assignment
+- Quiz
+- Lab Report
+- Project <br>
+The program allows you to set the time and date for the submission and will remind you when there is one day left and you have still not completed the task.<br>
+//image 
+You can add a task by clicking the '+' button at the right bottom corner.<br>
+To make record keeping easier, you can also filter your task selection by clicking the desired filter in the central tab. <br>
+The program also allows you to check your progress by including a visual bar, including a statistical overview of your pending tasks as well as completed and overdue tasks.<br>
+
+Each task has specific features unique to it such as:
+-Project: Team Size and Presentation required
+-Quiz: Duration and Type
+-Lab Report: Lab Number and Experiment
+-Assignment: Total Marks and Submission Format
+<br>
+When a task has passed the deadline set for it, the task label will turn red, going in contrast with the previous green. If the task is approaching the deadline, it will turn orange.<br>
+The Manager also displays a clock in the upper right corner to allow you to stay on-top of your deadlines. 
+
 
 
 
