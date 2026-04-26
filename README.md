@@ -64,7 +64,7 @@ The program asks you for your country and city the first time you open it, and i
 <img width="340" height="500" alt="Screenshot 2026-04-26 121718" src="https://github.com/user-attachments/assets/11360dc0-ce13-4cf6-8bbf-7a462492bfdf" />
 
 <br>
- ## Task Manager:
+ ## Task Manager:<br>
 The Task Manager is a single program where you can compile all your tasks and keep on top of them. There are 4 main task types that the program allows:
 - Assignment
 - Quiz
