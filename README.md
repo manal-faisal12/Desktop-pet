@@ -5,6 +5,10 @@ Berry is a  Desktop Pet, which is a Work / Study Assistant. Our objective is to 
  Nemotron Api Key
  >for the proper functioning of the fox journal(explained below).
 
+# <br>Team Contribution: <br>
+**Minahil Tahir:** Responsible for building the pet Fox and the Fox Journal.<br><br>
+**Fatima Faizan:** Responsible for building the Prayer Manager and Pomodoro application.<br><br>
+**Manal Faisal:** Responsible for building the Task Manager.<br>
 # <br>User Manual:<br>
 1.If you would like this fox to roam on your desktop too, all you have to do is clone this repository on your Intellij compiler.<br>
 2.For the next step,run the FoxDesktopPet file and the fox will be alive and well on your desktop.<br>
